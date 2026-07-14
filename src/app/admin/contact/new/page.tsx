@@ -1,0 +1,103 @@
+"use client";
+
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import { Save, ArrowLeft, Loader2 } from "lucide-react";
+import Link from "next/link";
+import { createContact } from "@/app/actions/contact";
+import toast from "react-hot-toast";
+
+type FormValues = {
+  title: string;
+  address: string;
+  phone: string;
+  email: string;
+};
+
+export default function NewContactPage() {
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { register, handleSubmit, formState: { errors } } = useForm<FormValues>();
+
+  const onSubmit = async (data: FormValues) => {
+    setIsSubmitting(true);
+    try {
+      const res = await createContact(data);
+      if (res.success) {
+        toast.success("Contact info saved successfully");
+        router.push("/admin/contact");
+      } else {
+        toast.error(res.error || "Failed to save");
+      }
+    } catch (error) {
+      toast.error("An unexpected error occurred");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="p-8 max-w-2xl mx-auto">
+      <div className="flex items-center gap-4 mb-8">
+        <Link href="/admin/contact" className="p-2 glass rounded-lg hover:bg-white/10 transition-colors">
+          <ArrowLeft className="w-5 h-5" />
+        </Link>
+        <h1 className="text-3xl font-bold text-white">Add Contact Office</h1>
+      </div>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="glass-panel border border-white/5 p-8 rounded-2xl space-y-6">
+        <div>
+          <label className="block text-sm font-medium text-slate-400 mb-2">Office Title *</label>
+          <input
+            {...register("title", { required: true })}
+            className="w-full bg-[#050b14] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors"
+            placeholder="e.g. Headquarters, Factory, Branch Office"
+          />
+          {errors.title && <span className="text-red-400 text-xs mt-1">Required</span>}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-slate-400 mb-2">Address *</label>
+          <textarea
+            {...register("address", { required: true })}
+            rows={3}
+            className="w-full bg-[#050b14] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors resize-none"
+            placeholder="Full physical address..."
+          />
+          {errors.address && <span className="text-red-400 text-xs mt-1">Required</span>}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-slate-400 mb-2">Phone Number *</label>
+            <input
+              {...register("phone", { required: true })}
+              className="w-full bg-[#050b14] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors"
+              placeholder="+1 234 567 890"
+            />
+            {errors.phone && <span className="text-red-400 text-xs mt-1">Required</span>}
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-400 mb-2">Email Address *</label>
+            <input
+              {...register("email", { required: true })}
+              type="email"
+              className="w-full bg-[#050b14] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors"
+              placeholder="contact@company.com"
+            />
+            {errors.email && <span className="text-red-400 text-xs mt-1">Required</span>}
+          </div>
+        </div>
+
+        <div className="flex justify-end pt-6 border-t border-white/10">
+          <button type="submit" disabled={isSubmitting} className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-medium transition-colors disabled:opacity-50 shadow-[0_0_15px_rgba(37,99,235,0.4)]">
+            {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
+            {isSubmitting ? "Saving..." : "Save Office"}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}

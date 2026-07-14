@@ -1,0 +1,128 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "./generated/client"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Product {
+  id             String          @id @default(cuid())
+  name           String
+  description    String?
+  keywords       String?
+  coverImage     String?
+  images         ProductImage[]
+  models         ProductModel[]
+  specifications Specification[]
+  resources      Resource[]
+  consumables    Consumable[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+model ProductImage {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url       String
+}
+
+model ProductModel {
+  id             String          @id @default(cuid())
+  productId      String
+  product        Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  modelName      String          // e.g., YN-JW1200
+  specifications Specification[]
+  resources      Resource[]
+  consumables    Consumable[]
+}
+
+model Specification {
+  id             String        @id @default(cuid())
+  productId      String?
+  product        Product?      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productModelId String?
+  productModel   ProductModel? @relation(fields: [productModelId], references: [id], onDelete: Cascade)
+  key            String
+  value          String?
+}
+
+model Resource {
+  id             String        @id @default(cuid())
+  name           String
+  url            String
+  productId      String?
+  product        Product?      @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productModelId String?
+  productModel   ProductModel? @relation(fields: [productModelId], references: [id], onDelete: Cascade)
+}
+
+model Consumable {
+  id          String         @id @default(cuid())
+  name        String
+  description String?
+  keywords    String?
+  image       String?
+  category    String?
+  products    Product[]
+  models      ProductModel[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model ContactInfo {
+  id        String   @id @default(cuid())
+  title     String
+  address   String
+  phone     String
+  email     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Certificate {
+  id        String   @id @default(cuid())
+  title     String
+  image     String
+  createdAt DateTime @default(now())
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
+
+model Admin {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SiteSettings {
+  id             String   @id @default(cuid())
+  smtpEmail      String?
+  smtpPassword   String?
+  adminEmail     String?
+  whatsappNumber String?
+  updatedAt      DateTime @updatedAt
+}
+
+model Enquiry {
+  id          String    @id @default(cuid())
+  name        String
+  email       String
+  phone       String?
+  message     String
+  productName String?
+  repliedAt   DateTime?
+  createdAt   DateTime  @default(now())
+}
