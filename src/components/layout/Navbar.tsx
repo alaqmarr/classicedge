@@ -3,10 +3,22 @@
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [isMobileMenuOpen]);
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-white/5 bg-[#02060d]/80 backdrop-blur-md">
       <div className="container mx-auto px-4 h-20 flex items-center justify-between">
@@ -40,8 +52,8 @@ export default function Navbar() {
 
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 top-20 bg-[#02060d] border-t border-white/5 z-40 overflow-y-auto">
-          <nav className="flex flex-col p-6 gap-6 text-lg font-medium">
+        <div className="md:hidden fixed inset-0 top-20 bg-[#02060d] border-t border-white/5 z-40 overflow-y-auto pb-safe">
+          <nav className="flex flex-col p-6 pb-12 gap-6 text-lg font-medium min-h-[calc(100dvh-5rem)]">
             <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-blue-400 transition-colors">HOME</Link>
             <Link href="/products" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-blue-400 transition-colors">MACHINES</Link>
             <Link href="/consumables" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-blue-400 transition-colors">CONSUMABLES</Link>
