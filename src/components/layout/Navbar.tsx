@@ -20,7 +20,8 @@ export default function Navbar() {
   }, [isMobileMenuOpen]);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-white/5 bg-[#02060d]/80 backdrop-blur-md">
+    <>
+      <header className="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-white/5 bg-[#02060d]/80 backdrop-blur-md">
       <div className="container mx-auto px-4 h-20 flex items-center justify-between">
         <Link href="/" className="flex items-center">
           <Image src="/logo.png" alt="Classic Edge 53" width={220} height={60} className="object-contain w-[220px] h-auto" />
@@ -50,6 +51,8 @@ export default function Navbar() {
         </button>
       </div>
 
+      </header>
+
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
         <div className="md:hidden fixed inset-0 top-20 bg-[#02060d] border-t border-white/5 z-40 overflow-y-auto pb-safe">
@@ -67,6 +70,6 @@ export default function Navbar() {
           </nav>
         </div>
       )}
-    </header>
+    </>
   );
 }
