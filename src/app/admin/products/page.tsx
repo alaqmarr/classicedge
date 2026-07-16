@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getProducts } from "@/app/actions/product";
-import { Plus, Edit, Trash2 } from "lucide-react";
+import { Plus } from "lucide-react";
+import ProductTableRow from "./ProductTableRow";
 
 export default async function AdminProductsPage() {
   const products = await getProducts();
@@ -33,23 +34,7 @@ export default async function AdminProductsPage() {
               </tr>
             ) : (
               products.map(product => (
-                <tr key={product.id} className="hover:bg-white/[0.02] transition-colors">
-                  <td className="px-6 py-4 font-medium text-white">{product.name}</td>
-                  <td className="px-6 py-4 text-slate-400">
-                    {product.models.map(m => m.modelName).join(", ") || "No models"}
-                  </td>
-                  <td className="px-6 py-4 text-slate-400">
-                    {new Date(product.createdAt).toLocaleDateString()}
-                  </td>
-                  <td className="px-6 py-4 text-right flex justify-end gap-2">
-                    <button className="p-2 text-slate-400 hover:text-blue-400 transition-colors">
-                      <Edit className="w-4 h-4" />
-                    </button>
-                    <button className="p-2 text-slate-400 hover:text-red-400 transition-colors">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </td>
-                </tr>
+                <ProductTableRow key={product.id} product={product} />
               ))
             )}
           </tbody>

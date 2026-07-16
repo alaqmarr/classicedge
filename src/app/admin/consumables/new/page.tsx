@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { NewConsumableClient } from "./NewConsumableClient";
+import { ConsumableForm } from "./NewConsumableClient";
 
 export const dynamic = "force-dynamic";
 
@@ -10,5 +10,5 @@ export default async function NewConsumablePage() {
     }
   });
 
-  return <NewConsumableClient products={products} />;
+  return <ConsumableForm products={products} />;
 }

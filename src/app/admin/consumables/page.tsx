@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import Link from "next/link";
-import { Plus, Package, Edit, Trash2 } from "lucide-react";
+import { Plus, Package } from "lucide-react";
+import ConsumableTableRow from "./ConsumableTableRow";
 
 export const dynamic = "force-dynamic";
 
@@ -43,48 +44,7 @@ export default async function AdminConsumablesPage() {
             </thead>
             <tbody className="divide-y divide-white/5">
               {consumables.map((item) => (
-                <tr key={item.id} className="hover:bg-white/[0.02] transition-colors">
-                  <td className="p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded bg-[#050b14] border border-white/10 overflow-hidden relative">
-                        {item.image ? (
-                           <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                        ) : (
-                          <Package className="w-5 h-5 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-slate-600" />
-                        )}
-                      </div>
-                      <span className="font-semibold text-white">{item.name}</span>
-                    </div>
-                  </td>
-                  <td className="p-4 text-slate-300">
-                    {item.products.length > 0 ? (
-                      <div className="flex flex-wrap gap-1">
-                        {item.products.map(p => (
-                          <span key={p.id} className="px-2 py-1 bg-emerald-500/10 text-emerald-400 text-xs rounded-md border border-emerald-500/20">{p.name}</span>
-                        ))}
-                      </div>
-                    ) : (
-                      <span className="text-slate-500">-</span>
-                    )}
-                  </td>
-                  <td className="p-4 text-slate-300">
-                    {item.models.length > 0 ? (
-                       <div className="flex flex-wrap gap-1">
-                        {item.models.map(m => (
-                          <span key={m.id} className="px-2 py-1 bg-blue-500/10 text-blue-400 text-xs rounded-md border border-blue-500/20">{m.modelName}</span>
-                        ))}
-                      </div>
-                    ) : (
-                      <span className="text-slate-500">-</span>
-                    )}
-                  </td>
-                  <td className="p-4 text-right">
-                    {/* Add edit/delete later if needed, right now we just list */}
-                    <button className="p-2 text-slate-400 hover:text-red-400 transition-colors">
-                      <Trash2 className="w-5 h-5" />
-                    </button>
-                  </td>
-                </tr>
+                <ConsumableTableRow key={item.id} item={item} />
               ))}
             </tbody>
           </table>

@@ -89,3 +89,69 @@ export async function getProducts() {
     }
   });
 }
+
+export async function deleteProduct(id: string) {
+  try {
+    await prisma.product.delete({
+      where: { id }
+    });
+    
+    revalidatePath("/admin/products");
+    revalidatePath("/products");
+    
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting product:", error);
+    return { success: false, error: "Failed to delete product" };
+  }
+}
+
+export async function updateProduct(id: string, data: {
+  name: string;
+  description?: string;
+  keywords?: string;
+  coverImage?: string;
+  models: ProductModelInput[];
+}) {
+  try {
+    // Delete existing models and specifications to recreate them
+    await prisma.productModel.deleteMany({
+      where: { productId: id }
+    });
+
+    const product = await prisma.product.update({
+      where: { id },
+      data: {
+        name: data.name,
+        description: data.description,
+        keywords: data.keywords || extractKeywords(data.name, data.description),
+        coverImage: data.coverImage,
+        models: {
+          create: data.models.map(model => {
+            const modelId = `${id}-${generateSlug(model.modelName) || "model"}`;
+            return {
+              id: modelId,
+              modelName: model.modelName,
+              specifications: {
+                create: model.specifications.map((spec, index) => ({
+                  id: `${modelId}-spec-${index}`,
+                  key: spec.key,
+                  value: spec.value
+                }))
+              }
+            };
+          })
+        }
+      }
+    });
+    
+    revalidatePath("/admin/products");
+    revalidatePath("/products");
+    revalidatePath(`/products/${id}`);
+    
+    return { success: true, product };
+  } catch (error) {
+    console.error("Error updating product:", error);
+    return { success: false, error: "Failed to update product" };
+  }
+}

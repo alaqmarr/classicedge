@@ -12,7 +12,7 @@ import { uploadFile } from "@/lib/uploadHelpers";
 
 export type ConsumableOptions = { id: string, name: string, category: string | null }[];
 
-type FormValues = {
+export type FormValues = {
   name: string;
   description: string;
   keywords: string;
@@ -28,13 +28,21 @@ type FormValues = {
   }[];
 };
 
-export function ProductForm({ availableConsumables }: { availableConsumables: ConsumableOptions }) {
+export function ProductForm({ 
+  availableConsumables, 
+  initialData, 
+  productId 
+}: { 
+  availableConsumables: ConsumableOptions;
+  initialData?: Partial<FormValues>;
+  productId?: string;
+}) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadProgress, setUploadProgress] = useState("");
 
   const { register, control, handleSubmit, formState: { errors } } = useForm<FormValues>({
-    defaultValues: {
+    defaultValues: initialData || {
       name: "",
       description: "",
       keywords: "",
@@ -131,19 +139,22 @@ export function ProductForm({ availableConsumables }: { availableConsumables: Co
         models: processedModels
       };
 
-      const res = await fetch("/api/admin/products", {
-        method: "POST",
+      const url = productId ? `/api/admin/products/${productId}` : "/api/admin/products";
+      const method = productId ? "PUT" : "POST";
+
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
       
       const result = await res.json();
       if (res.ok) {
-        toast.success("Product created successfully");
+        toast.success(productId ? "Product updated successfully" : "Product created successfully");
         router.push("/admin/products");
         router.refresh();
       } else {
-        toast.error(result.error || "Failed to create product");
+        toast.error(result.error || "Failed to save product");
       }
     } catch (error: any) {
       toast.error(error.message || "An unexpected error occurred");
@@ -196,7 +207,7 @@ export function ProductForm({ availableConsumables }: { availableConsumables: Co
         <Link href="/admin/products" className="p-2 glass rounded-lg hover:bg-white/10 transition-colors">
           <ArrowLeft className="w-5 h-5" />
         </Link>
-        <h1 className="text-3xl font-bold text-white">Add New Product</h1>
+        <h1 className="text-3xl font-bold text-white">{productId ? "Edit Product" : "Add New Product"}</h1>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">

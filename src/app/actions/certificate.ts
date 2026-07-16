@@ -49,3 +49,19 @@ export async function createCertificate(data: {
     return { success: false, error: "Failed to create certificate" };
   }
 }
+
+export async function deleteCertificate(id: string) {
+  try {
+    await prisma.certificate.delete({
+      where: { id }
+    });
+    
+    revalidatePath("/admin/certificates");
+    revalidatePath("/certificates");
+    
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting certificate:", error);
+    return { success: false, error: "Failed to delete certificate" };
+  }
+}

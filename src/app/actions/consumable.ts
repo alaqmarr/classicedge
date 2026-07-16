@@ -57,3 +57,57 @@ export async function createConsumable(data: {
     return { success: false, error: "Failed to create consumable" };
   }
 }
+
+export async function deleteConsumable(id: string) {
+  try {
+    await prisma.consumable.delete({
+      where: { id }
+    });
+    
+    revalidatePath("/admin/consumables");
+    revalidatePath("/consumables");
+    
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting consumable:", error);
+    return { success: false, error: "Failed to delete consumable" };
+  }
+}
+
+export async function updateConsumable(id: string, data: {
+  name: string;
+  description?: string;
+  keywords?: string;
+  image?: string;
+  price?: number | null;
+  productIds: string[];
+  modelIds: string[];
+}) {
+  try {
+    const consumable = await prisma.consumable.update({
+      where: { id },
+      data: {
+        name: data.name,
+        description: data.description || null,
+        keywords: data.keywords || extractKeywords(data.name, data.description || ""),
+        image: data.image || null,
+        products: {
+          set: [],
+          connect: data.productIds.map(pid => ({ id: pid }))
+        },
+        models: {
+          set: [],
+          connect: data.modelIds.map(mid => ({ id: mid }))
+        }
+      }
+    });
+
+    revalidatePath("/admin/consumables");
+    revalidatePath("/consumables");
+    
+    return { success: true, consumable };
+  } catch (error: any) {
+    console.error("Error updating consumable:", error);
+    return { success: false, error: "Failed to update consumable" };
+  }
+}

@@ -5,23 +5,31 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, Loader2, Save } from "lucide-react";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import { createConsumable } from "@/app/actions/consumable";
+import { createConsumable, updateConsumable } from "@/app/actions/consumable";
 import { ImageUpload, UploadableImage } from "@/components/ui/ImageUpload";
 import { uploadFile } from "@/lib/uploadHelpers";
 
-export function NewConsumableClient({ products }: { products: any[] }) {
+export function ConsumableForm({ 
+  products,
+  initialData,
+  consumableId
+}: { 
+  products: any[];
+  initialData?: any;
+  consumableId?: string;
+}) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadProgress, setUploadProgress] = useState("");
   
   const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    keywords: "",
-    coverImage: [] as UploadableImage[],
-    price: "",
-    productIds: [] as string[],
-    modelIds: [] as string[]
+    name: initialData?.name || "",
+    description: initialData?.description || "",
+    keywords: initialData?.keywords || "",
+    coverImage: initialData?.image ? ([{ url: initialData.image, preview: initialData.image }] as UploadableImage[]) : ([] as UploadableImage[]),
+    price: initialData?.price?.toString() || "",
+    productIds: initialData?.products?.map((p: any) => p.id) || ([] as string[]),
+    modelIds: initialData?.models?.map((m: any) => m.id) || ([] as string[])
   });
 
   const availableModels = products
@@ -47,21 +55,25 @@ export function NewConsumableClient({ products }: { products: any[] }) {
 
       setUploadProgress("Saving...");
 
-      const res = await createConsumable({
+      const payload = {
         name: formData.name,
         description: formData.description,
         keywords: formData.keywords,
         image: finalImageUrl,
         productIds: formData.productIds,
         modelIds: formData.modelIds
-      });
+      };
+
+      const res = consumableId 
+        ? await updateConsumable(consumableId, payload)
+        : await createConsumable(payload);
 
       if (res.success) {
-        toast.success("Consumable created!");
+        toast.success(consumableId ? "Consumable updated!" : "Consumable created!");
         router.push("/admin/consumables");
         router.refresh();
       } else {
-        toast.error(res.error || "Failed to create");
+        toast.error(res.error || "Failed to save");
       }
     } catch (error: any) {
       toast.error(error.message || "An unexpected error occurred");
@@ -75,11 +87,11 @@ export function NewConsumableClient({ products }: { products: any[] }) {
     setFormData(prev => ({
       ...prev,
       productIds: prev.productIds.includes(id) 
-        ? prev.productIds.filter(pid => pid !== id)
+        ? prev.productIds.filter((pid: string) => pid !== id)
         : [...prev.productIds, id],
       // Remove models if their product is unselected
       modelIds: prev.productIds.includes(id) 
-        ? prev.modelIds.filter(mid => !products.find(p => p.id === id)?.models.some((m: any) => m.id === mid))
+        ? prev.modelIds.filter((mid: string) => !products.find((p: any) => p.id === id)?.models.some((m: any) => m.id === mid))
         : prev.modelIds
     }));
   };
@@ -88,7 +100,7 @@ export function NewConsumableClient({ products }: { products: any[] }) {
     setFormData(prev => ({
       ...prev,
       modelIds: prev.modelIds.includes(id)
-        ? prev.modelIds.filter(mid => mid !== id)
+        ? prev.modelIds.filter((mid: string) => mid !== id)
         : [...prev.modelIds, id]
     }));
   };
@@ -100,8 +112,8 @@ export function NewConsumableClient({ products }: { products: any[] }) {
           <ArrowLeft className="w-6 h-6" />
         </Link>
         <div>
-          <h1 className="text-3xl font-bold text-white">Add Consumable</h1>
-          <p className="text-slate-400 text-sm mt-1">Create a new accessory or part.</p>
+          <h1 className="text-3xl font-bold text-white">{consumableId ? "Edit Consumable" : "Add Consumable"}</h1>
+          <p className="text-slate-400 text-sm mt-1">{consumableId ? "Update consumable details." : "Create a new accessory or part."}</p>
         </div>
       </div>
 
@@ -210,7 +222,7 @@ export function NewConsumableClient({ products }: { products: any[] }) {
             className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-medium transition-all shadow-[0_0_15px_rgba(37,99,235,0.4)] disabled:opacity-50"
           >
             {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
-            {isSubmitting ? (uploadProgress || "Saving...") : "Save Consumable"}
+            {isSubmitting ? (uploadProgress || "Saving...") : (consumableId ? "Save Changes" : "Save Consumable")}
           </button>
         </div>
       </form>

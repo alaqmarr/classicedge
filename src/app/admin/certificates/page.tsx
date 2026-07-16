@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getCertificates } from "@/app/actions/certificate";
-import { Plus, Trash2 } from "lucide-react";
-import Image from "next/image";
+import { Plus } from "lucide-react";
+import CertificateCard from "./CertificateCard";
 
 export default async function AdminCertificatesPage() {
   const certificates = await getCertificates();
@@ -22,23 +22,7 @@ export default async function AdminCertificatesPage() {
           </div>
         ) : (
           certificates.map((cert) => (
-            <div key={cert.id} className="bg-[#050b14] border border-white/5 rounded-xl overflow-hidden group">
-              <div className="aspect-[4/3] bg-white/5 relative flex items-center justify-center">
-                {cert.image ? (
-                  <Image src={cert.image} alt={cert.title} fill className="object-cover" />
-                ) : (
-                  <span className="text-slate-500 text-xs">No image</span>
-                )}
-                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <button className="bg-red-500/20 text-red-400 p-3 rounded-full hover:bg-red-500 hover:text-white transition-colors">
-                    <Trash2 className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
-              <div className="p-4">
-                <h3 className="font-semibold text-slate-200 text-center truncate">{cert.title}</h3>
-              </div>
-            </div>
+            <CertificateCard key={cert.id} certificate={cert} />
           ))
         )}
       </div>
