@@ -388,6 +388,7 @@ export const ModelName = {
   ProductImage: 'ProductImage',
   ProductModel: 'ProductModel',
   Specification: 'Specification',
+  ProductFeature: 'ProductFeature',
   Resource: 'Resource',
   Consumable: 'Consumable',
   ContactInfo: 'ContactInfo',
@@ -411,7 +412,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "product" | "productImage" | "productModel" | "specification" | "resource" | "consumable" | "contactInfo" | "certificate" | "user" | "admin" | "siteSettings" | "enquiry"
+    modelProps: "product" | "productImage" | "productModel" | "specification" | "productFeature" | "resource" | "consumable" | "contactInfo" | "certificate" | "user" | "admin" | "siteSettings" | "enquiry"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -708,6 +709,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.SpecificationCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.SpecificationCountAggregateOutputType> | number
+        }
+      }
+    }
+    ProductFeature: {
+      payload: Prisma.$ProductFeaturePayload<ExtArgs>
+      fields: Prisma.ProductFeatureFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProductFeatureFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductFeaturePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProductFeatureFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductFeaturePayload>
+        }
+        findFirst: {
+          args: Prisma.ProductFeatureFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductFeaturePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProductFeatureFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductFeaturePayload>
+        }
+        findMany: {
+          args: Prisma.ProductFeatureFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductFeaturePayload>[]
+        }
+        create: {
+          args: Prisma.ProductFeatureCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductFeaturePayload>
+        }
+        createMany: {
+          args: Prisma.ProductFeatureCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ProductFeatureCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductFeaturePayload>[]
+        }
+        delete: {
+          args: Prisma.ProductFeatureDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductFeaturePayload>
+        }
+        update: {
+          args: Prisma.ProductFeatureUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductFeaturePayload>
+        }
+        deleteMany: {
+          args: Prisma.ProductFeatureDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProductFeatureUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProductFeatureUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductFeaturePayload>[]
+        }
+        upsert: {
+          args: Prisma.ProductFeatureUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProductFeaturePayload>
+        }
+        aggregate: {
+          args: Prisma.ProductFeatureAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProductFeature>
+        }
+        groupBy: {
+          args: Prisma.ProductFeatureGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProductFeatureGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProductFeatureCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProductFeatureCountAggregateOutputType> | number
         }
       }
     }
@@ -1381,6 +1456,15 @@ export const SpecificationScalarFieldEnum = {
 export type SpecificationScalarFieldEnum = (typeof SpecificationScalarFieldEnum)[keyof typeof SpecificationScalarFieldEnum]
 
 
+export const ProductFeatureScalarFieldEnum = {
+  id: 'id',
+  productId: 'productId',
+  text: 'text'
+} as const
+
+export type ProductFeatureScalarFieldEnum = (typeof ProductFeatureScalarFieldEnum)[keyof typeof ProductFeatureScalarFieldEnum]
+
+
 export const ResourceScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -1632,6 +1716,7 @@ export type GlobalOmitConfig = {
   productImage?: Prisma.ProductImageOmit
   productModel?: Prisma.ProductModelOmit
   specification?: Prisma.SpecificationOmit
+  productFeature?: Prisma.ProductFeatureOmit
   resource?: Prisma.ResourceOmit
   consumable?: Prisma.ConsumableOmit
   contactInfo?: Prisma.ContactInfoOmit

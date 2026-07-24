@@ -1,8 +1,14 @@
 import { PrismaClient } from '../../prisma/generated/client/client'
 import { PrismaLibSql } from '@prisma/adapter-libsql'
+import path from 'path'
+
+const dbUrl = process.env.DATABASE_URL || 'file:./dev.db'
+const absoluteUrl = dbUrl.startsWith('file:./') 
+  ? `file:${path.join(process.cwd(), dbUrl.replace('file:./', ''))}`
+  : dbUrl
 
 const adapter = new PrismaLibSql({
-  url: process.env.DATABASE_URL || 'file:./dev.db',
+  url: absoluteUrl,
 })
 
 const prismaClientSingleton = () => {

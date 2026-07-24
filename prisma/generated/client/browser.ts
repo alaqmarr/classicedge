@@ -38,6 +38,11 @@ export type ProductModel = Prisma.ProductModelModel
  */
 export type Specification = Prisma.SpecificationModel
 /**
+ * Model ProductFeature
+ * 
+ */
+export type ProductFeature = Prisma.ProductFeatureModel
+/**
  * Model Resource
  * 
  */

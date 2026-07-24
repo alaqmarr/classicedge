@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { generateSlug } from "@/lib/slugify";
 
 export async function POST(req: Request) {
   try {
@@ -13,8 +14,21 @@ export async function POST(req: Request) {
 
     const data = await req.json();
 
+    let baseSlug = generateSlug(data.name);
+    if (!baseSlug) baseSlug = "product";
+    
+    let productId = baseSlug;
+    let counter = 1;
+    while (true) {
+      const existing = await prisma.product.findUnique({ where: { id: productId }, select: { id: true } });
+      if (!existing) break;
+      counter++;
+      productId = `${baseSlug}-${counter}`;
+    }
+
     const product = await prisma.product.create({
       data: {
+        id: productId,
         name: data.name,
         description: data.description,
         keywords: data.keywords || null,
