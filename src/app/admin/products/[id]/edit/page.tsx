@@ -17,6 +17,7 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
       include: {
         images: true,
         resources: true,
+        features: true,
         specifications: true,
         consumables: true,
         models: {
@@ -40,6 +41,7 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
     keywords: product.keywords || "",
     images: product.images.map(img => ({ url: img.url, preview: img.url })),
     resources: product.resources.map(res => ({ name: res.name, url: res.url })),
+    features: product.features.map(f => ({ text: f.text })),
     specifications: product.specifications.map(s => ({ key: s.key, value: s.value || "" })),
     consumables: product.consumables.map(c => c.id),
     models: product.models.map(m => ({

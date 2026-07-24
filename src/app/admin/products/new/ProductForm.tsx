@@ -18,6 +18,7 @@ export type FormValues = {
   keywords: string;
   images: UploadableImage[];
   resources: UploadableResource[];
+  features: { text: string }[];
   specifications: { key: string; value: string }[];
   consumables: string[];
   models: {
@@ -41,13 +42,14 @@ export function ProductForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadProgress, setUploadProgress] = useState("");
 
-  const { register, control, handleSubmit, formState: { errors } } = useForm<FormValues>({
+  const { register, control, handleSubmit, getValues, formState: { errors } } = useForm<FormValues>({
     defaultValues: initialData || {
       name: "",
       description: "",
       keywords: "",
       images: [],
       resources: [],
+      features: [],
       specifications: [],
       consumables: [],
       models: []
@@ -59,6 +61,11 @@ export function ProductForm({
     name: "models"
   });
 
+  const { fields: featureFields, append: appendFeature, remove: removeFeature } = useFieldArray({
+    control,
+    name: "features"
+  });
+
   const { fields: rootSpecFields, append: appendRootSpec, remove: removeRootSpec } = useFieldArray({
     control,
     name: "specifications"
@@ -66,14 +73,15 @@ export function ProductForm({
 
   const handleAddModel = () => {
     let initialSpecs = [{ key: "", value: "" }];
+    const currentValues = getValues();
     
-    if (modelFields.length > 0) {
-      const prevSpecs = modelFields[modelFields.length - 1].specifications;
+    if (currentValues.models && currentValues.models.length > 0) {
+      const prevSpecs = currentValues.models[currentValues.models.length - 1].specifications;
       if (prevSpecs && prevSpecs.length > 0) {
-        initialSpecs = prevSpecs.map(s => ({ key: s.key, value: "" }));
+        initialSpecs = prevSpecs.map(s => ({ key: s.key || "", value: "" }));
       }
-    } else if (rootSpecFields.length > 0) {
-       initialSpecs = rootSpecFields.map(s => ({ key: s.key, value: "" }));
+    } else if (currentValues.specifications && currentValues.specifications.length > 0) {
+       initialSpecs = currentValues.specifications.map(s => ({ key: s.key || "", value: "" }));
     }
 
     appendModel({
@@ -233,6 +241,29 @@ export function ProductForm({
                 className="w-full bg-[#050b14] border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors resize-none"
                 placeholder="Brief description of the machine..."
               />
+            </div>
+
+            <div className="pt-2">
+              <div className="flex justify-between items-center mb-2">
+                <label className="block text-sm font-medium text-slate-400">Product Features (Bullet Points)</label>
+                <button type="button" onClick={() => appendFeature({ text: "" })} className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1">
+                  <Plus className="w-3 h-3" /> Add Feature
+                </button>
+              </div>
+              <div className="space-y-3">
+                {featureFields.map((feature, featureIndex) => (
+                  <div key={feature.id} className="flex gap-3">
+                    <input
+                      {...register(`features.${featureIndex}.text`, { required: true })}
+                      placeholder="e.g. High-speed automatic acrylic cutting"
+                      className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors"
+                    />
+                    <button type="button" onClick={() => removeFeature(featureIndex)} className="p-2 text-slate-500 hover:text-red-400 transition-colors">
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
             </div>
 
             <div>

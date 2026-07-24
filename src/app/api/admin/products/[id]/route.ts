@@ -18,6 +18,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     await prisma.productImage.deleteMany({ where: { productId: id } });
     await prisma.resource.deleteMany({ where: { productId: id } });
     await prisma.specification.deleteMany({ where: { productId: id } });
+    await prisma.productFeature.deleteMany({ where: { productId: id } });
     await prisma.productModel.deleteMany({ where: { productId: id } });
 
     // Then update the product and recreate relationships
@@ -36,6 +37,9 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         },
         specifications: {
           create: data.specifications.map((s: any) => ({ key: s.key, value: s.value }))
+        },
+        features: {
+          create: data.features?.map((f: any) => ({ text: f.text })) || []
         },
         consumables: {
           set: [],

@@ -17,6 +17,7 @@ export async function POST(req: Request) {
       data: {
         name: data.name,
         description: data.description,
+        keywords: data.keywords || null,
         coverImage: data.images[0] || null,
         images: {
           create: data.images.map((url: string) => ({ url }))
@@ -26,6 +27,9 @@ export async function POST(req: Request) {
         },
         specifications: {
           create: data.specifications.map((s: any) => ({ key: s.key, value: s.value }))
+        },
+        features: {
+          create: data.features?.map((f: any) => ({ text: f.text })) || []
         },
         consumables: {
           connect: data.consumables.map((id: string) => ({ id }))

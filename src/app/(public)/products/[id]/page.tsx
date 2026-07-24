@@ -45,6 +45,7 @@ export default async function ProductDetailsPage({ params }: { params: Promise<{
       include: {
         images: true,
         resources: true,
+        features: true,
         specifications: true,
         consumables: true,
         models: {
@@ -92,22 +93,33 @@ export default async function ProductDetailsPage({ params }: { params: Promise<{
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-            <div className="flex items-center gap-3">
-              <CheckCircle2 className="w-5 h-5 text-blue-500" />
-              <span className="text-slate-300">High Efficiency</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <CheckCircle2 className="w-5 h-5 text-blue-500" />
-              <span className="text-slate-300">Precise Control</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <CheckCircle2 className="w-5 h-5 text-blue-500" />
-              <span className="text-slate-300">Durable Build</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <CheckCircle2 className="w-5 h-5 text-blue-500" />
-              <span className="text-slate-300">24x7 Support</span>
-            </div>
+            {product.features.length > 0 ? (
+              product.features.map(feature => (
+                <div key={feature.id} className="flex items-center gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-blue-500 shrink-0" />
+                  <span className="text-slate-300">{feature.text}</span>
+                </div>
+              ))
+            ) : (
+              <>
+                <div className="flex items-center gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-blue-500 shrink-0" />
+                  <span className="text-slate-300">High Efficiency</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-blue-500 shrink-0" />
+                  <span className="text-slate-300">Precise Control</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-blue-500 shrink-0" />
+                  <span className="text-slate-300">Durable Build</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-blue-500 shrink-0" />
+                  <span className="text-slate-300">24x7 Support</span>
+                </div>
+              </>
+            )}
           </div>
 
           <ProductActionButtons 
@@ -185,8 +197,8 @@ export default async function ProductDetailsPage({ params }: { params: Promise<{
                 </thead>
                 <tbody>
                   {product.models.map((model, idx) => (
-                    <tr key={model.id} className={idx % 2 === 0 ? "bg-white/[0.02]" : "bg-transparent"}>
-                      <td className="p-4 border-b border-r border-white/10 font-semibold text-white whitespace-nowrap">
+                    <tr key={model.id} className={idx % 2 === 0 ? "bg-white/[0.04]" : "bg-white/[0.01] hover:bg-white/[0.06] transition-colors"}>
+                      <td className="p-4 border-b border-r border-white/10 font-bold text-blue-400 bg-[#172554]/30 whitespace-nowrap shadow-[inset_-1px_0_0_rgba(255,255,255,0.1)]">
                         {model.modelName}
                       </td>
                       {allModelSpecKeys.map(key => {
