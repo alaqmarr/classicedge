@@ -28,10 +28,36 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     };
   }
 
+  const description = product.description?.substring(0, 160) || "Precision acrylic fabrication machine";
+  const title = `${product.name} | Classic Edge 53`;
+
   return {
-    title: `${product.name} | Classic Edge 53`,
-    description: product.description?.substring(0, 160) || "Precision acrylic fabrication machine",
+    title,
+    description,
     keywords: product.keywords ? product.keywords.split(",") : [product.name, "acrylic machine", "fabrication"],
+    openGraph: {
+      title,
+      description,
+      url: `https://classicedge53.com/products/${product.id}`,
+      siteName: 'Classic Edge 53',
+      type: 'website',
+      ...(product.coverImage && {
+        images: [
+          {
+            url: product.coverImage,
+            width: 1200,
+            height: 630,
+            alt: product.name,
+          }
+        ]
+      })
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      ...(product.coverImage && { images: [product.coverImage] }),
+    },
   };
 }
 

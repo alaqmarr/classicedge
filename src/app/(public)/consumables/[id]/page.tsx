@@ -27,10 +27,36 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     };
   }
 
+  const description = consumable.description?.substring(0, 160) || "Premium quality part/accessory for Classic Edge 53 machines.";
+  const title = `${consumable.name} | Classic Edge 53`;
+
   return {
-    title: `${consumable.name} | Classic Edge 53`,
-    description: consumable.description?.substring(0, 160) || "Premium quality part/accessory for Classic Edge 53 machines.",
+    title,
+    description,
     keywords: consumable.keywords ? consumable.keywords.split(",") : [consumable.name, "accessory", "part"],
+    openGraph: {
+      title,
+      description,
+      url: `https://classicedge53.com/consumables/${consumable.id}`,
+      siteName: 'Classic Edge 53',
+      type: 'website',
+      ...(consumable.image && {
+        images: [
+          {
+            url: consumable.image,
+            width: 1200,
+            height: 630,
+            alt: consumable.name,
+          }
+        ]
+      })
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      ...(consumable.image && { images: [consumable.image] }),
+    },
   };
 }
 
