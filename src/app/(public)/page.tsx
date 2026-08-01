@@ -152,14 +152,13 @@ export default async function Home() {
             <h2 className="text-3xl md:text-4xl font-bold">Uncompromising Quality</h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
             {[
               { title: "German Inspired Technology", icon: Shield },
               { title: "Heavy Duty Industrial Build", icon: Wrench },
               { title: "Servo Motor Precision", icon: Settings },
               { title: "Advanced PLC Control", icon: Cpu },
               { title: "High Efficiency", icon: Zap },
-              { title: "24x7 Support", icon: HeadphonesIcon },
             ].map((feature, i) => (
               <div key={i} className="glass border border-white/5 p-6 rounded-xl flex flex-col items-center text-center gap-4 hover:border-blue-500/50 hover:shadow-[0_0_30px_rgba(37,99,235,0.15)] transition-all bg-gradient-to-b from-blue-900/10 to-transparent group">
                 <feature.icon className="w-8 h-8 text-blue-400 group-hover:scale-110 transition-transform duration-300" />
