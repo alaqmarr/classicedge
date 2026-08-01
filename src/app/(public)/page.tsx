@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import Link from "next/link";
 import { ArrowRight, Download, Play, Trophy, Cpu, Globe, Users, CheckCircle2, Shield, Settings, Wrench, Zap, HeadphonesIcon } from "lucide-react";
 import Image from "next/image";
+import { HeroImageCarousel } from "./HeroImageCarousel";
 
 import type { Metadata } from "next";
 
@@ -18,6 +19,11 @@ export default async function Home() {
     take: 4,
     orderBy: { createdAt: "desc" }
   });
+
+  const heroImages = [
+    "/hero-machine.jpeg",
+    ...machines.map(m => m.coverImage).filter(Boolean)
+  ] as string[];
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -37,7 +43,7 @@ export default async function Home() {
               <p className="text-lg md:text-xl text-slate-400 mb-10 max-w-lg leading-relaxed">
                 Engineering Tomorrow's Acrylic Industry with state-of-the-art precision machinery and unmatched reliability.
               </p>
-              
+
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link href="/products" className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full font-medium transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:shadow-[0_0_30px_rgba(37,99,235,0.6)]">
                   EXPLORE MACHINES <ArrowRight className="w-5 h-5" />
@@ -46,7 +52,7 @@ export default async function Home() {
                   DOWNLOAD CATALOGUE <Download className="w-5 h-5 shrink-0" />
                 </a>
               </div>
-              
+
               <div className="mt-12 flex items-center gap-4">
                 <button className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5 transition-colors">
                   <Play className="w-4 h-4 ml-1 text-slate-300" />
@@ -57,21 +63,11 @@ export default async function Home() {
                 </div>
               </div>
             </div>
-            
+
             <div className="relative">
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-blue-600/10 rounded-full blur-3xl -z-10"></div>
-              
-              <div className="relative aspect-square md:aspect-[4/3] glass-panel rounded-2xl flex items-center justify-center border border-white/10 overflow-hidden group">
-                <Image 
-                  src="/hero-machine-v2.png" 
-                  alt="State of the art acrylic fabrication machine" 
-                  fill
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  className="object-cover group-hover:scale-105 transition-transform duration-700"
-                  priority
-                />
-                <div className="absolute inset-0 bg-gradient-to-tr from-blue-900/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10 pointer-events-none"></div>
-              </div>
+
+              <HeroImageCarousel images={heroImages} />
             </div>
           </div>
         </div>
@@ -162,19 +158,19 @@ export default async function Home() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-             {[
-               { title: "German Inspired Technology", icon: Shield },
-               { title: "Heavy Duty Industrial Build", icon: Wrench },
-               { title: "Servo Motor Precision", icon: Settings },
-               { title: "Advanced PLC Control", icon: Cpu },
-               { title: "High Efficiency", icon: Zap },
-               { title: "24x7 Support", icon: HeadphonesIcon },
-             ].map((feature, i) => (
-               <div key={i} className="glass border border-white/5 p-6 rounded-xl flex flex-col items-center text-center gap-4 hover:border-blue-500/50 hover:shadow-[0_0_30px_rgba(37,99,235,0.15)] transition-all bg-gradient-to-b from-blue-900/10 to-transparent group">
-                 <feature.icon className="w-8 h-8 text-blue-400 group-hover:scale-110 transition-transform duration-300" />
-                 <p className="text-sm font-medium text-slate-300 group-hover:text-white transition-colors">{feature.title}</p>
-               </div>
-             ))}
+            {[
+              { title: "German Inspired Technology", icon: Shield },
+              { title: "Heavy Duty Industrial Build", icon: Wrench },
+              { title: "Servo Motor Precision", icon: Settings },
+              { title: "Advanced PLC Control", icon: Cpu },
+              { title: "High Efficiency", icon: Zap },
+              { title: "24x7 Support", icon: HeadphonesIcon },
+            ].map((feature, i) => (
+              <div key={i} className="glass border border-white/5 p-6 rounded-xl flex flex-col items-center text-center gap-4 hover:border-blue-500/50 hover:shadow-[0_0_30px_rgba(37,99,235,0.15)] transition-all bg-gradient-to-b from-blue-900/10 to-transparent group">
+                <feature.icon className="w-8 h-8 text-blue-400 group-hover:scale-110 transition-transform duration-300" />
+                <p className="text-sm font-medium text-slate-300 group-hover:text-white transition-colors">{feature.title}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
