@@ -85,11 +85,12 @@ model Consumable {
 
 model ContactInfo {
   id        String   @id @default(cuid())
-  title     String
-  address   String
-  phone     String
-  email     String
-  createdAt DateTime @default(now())
+  title       String
+  address     String
+  phone       String
+  email       String
+  mapEmbedUrl String?
+  createdAt   DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 

@@ -58,6 +58,15 @@ export default async function ContactPage() {
                     </div>
                   </div>
                 </div>
+
+                {contact.mapEmbedUrl && (
+                  <div className="pt-6 border-t border-white/10 mt-6">
+                    <div 
+                      className="w-full h-64 sm:h-72 rounded-xl overflow-hidden opacity-90 hover:opacity-100 transition-opacity duration-300 border border-white/10 [&>iframe]:w-full [&>iframe]:h-full"
+                      dangerouslySetInnerHTML={{ __html: contact.mapEmbedUrl }}
+                    />
+                  </div>
+                )}
               </div>
             ))
           )}

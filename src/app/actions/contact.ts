@@ -16,6 +16,7 @@ export async function createContact(data: {
   address: string;
   phone: string;
   email: string;
+  mapEmbedUrl?: string;
 }) {
   try {
     const contact = await prisma.contactInfo.create({

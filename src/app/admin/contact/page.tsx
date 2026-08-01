@@ -27,6 +27,12 @@ export default async function AdminContactsPage() {
                 <p><span className="text-slate-300 font-medium">Address:</span> {contact.address}</p>
                 <p><span className="text-slate-300 font-medium">Phone:</span> {contact.phone}</p>
                 <p><span className="text-slate-300 font-medium">Email:</span> {contact.email}</p>
+                {contact.mapEmbedUrl && (
+                  <p className="flex items-center gap-2 mt-4 text-emerald-400 text-xs font-semibold uppercase tracking-wider">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    Map Attached
+                  </p>
+                )}
               </div>
               <div className="flex justify-end gap-2 border-t border-white/10 pt-4">
                 <button className="p-2 text-slate-400 hover:text-red-400 transition-colors">
