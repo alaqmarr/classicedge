@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Settings, Package, Phone, FileBadge, LayoutDashboard, Inbox, Layers, Menu, X } from "lucide-react";
+import { Settings, Package, Phone, FileBadge, LayoutDashboard, Inbox, Layers, Menu, X, BarChart3 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -59,6 +59,10 @@ export default function AdminLayout({
           <Link href="/admin/contact" onClick={() => setIsSidebarOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-colors">
             <Phone className="w-5 h-5 text-slate-400" />
             <span>Contact Offices</span>
+          </Link>
+          <Link href="/admin/analytics" onClick={() => setIsSidebarOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-colors">
+            <BarChart3 className="w-5 h-5 text-slate-400" />
+            <span>Analytics</span>
           </Link>
           <Link href="/admin/settings" onClick={() => setIsSidebarOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-colors">
             <Settings className="w-5 h-5 text-slate-400" />

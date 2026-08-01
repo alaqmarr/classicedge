@@ -135,3 +135,19 @@ model Enquiry {
   repliedAt   DateTime?
   createdAt   DateTime  @default(now())
 }
+
+model PageAnalytics {
+  id        String   @id @default(cuid())
+  path      String   @unique
+  visits    Int      @default(0)
+  updatedAt DateTime @updatedAt
+}
+
+model PageVisitSession {
+  id        String   @id @default(cuid())
+  sessionId String
+  path      String
+  createdAt DateTime @default(now())
+
+  @@unique([sessionId, path])
+}
