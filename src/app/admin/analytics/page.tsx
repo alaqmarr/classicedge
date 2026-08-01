@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/db";
+import prisma from "@/lib/prisma";
 import { BarChart3, TrendingUp, Eye, Activity } from "lucide-react";
 
 export const dynamic = "force-dynamic";
