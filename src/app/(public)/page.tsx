@@ -75,35 +75,12 @@ export default async function Home() {
 
       {/* Stats Section */}
       <section className="py-10 border-y border-white/5 bg-white/[0.02]">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
-            <div className="flex items-center gap-4">
-              <Trophy className="w-10 h-10 text-blue-500" />
-              <div>
-                <h3 className="text-3xl font-bold text-white">15+</h3>
-                <p className="text-sm text-slate-400">Years Experience</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <Cpu className="w-10 h-10 text-blue-500" />
-              <div>
-                <h3 className="text-3xl font-bold text-white">5000+</h3>
-                <p className="text-sm text-slate-400">Machines Installed</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <Globe className="w-10 h-10 text-blue-500" />
-              <div>
-                <h3 className="text-3xl font-bold text-white">25+</h3>
-                <p className="text-sm text-slate-400">Countries Served</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4">
-              <Users className="w-10 h-10 text-blue-500" />
-              <div>
-                <h3 className="text-3xl font-bold text-white">100+</h3>
-                <p className="text-sm text-slate-400">Fabricators Trust Us</p>
-              </div>
+        <div className="container mx-auto px-4 flex justify-center">
+          <div className="flex items-center gap-6 py-4">
+            <Trophy className="w-12 h-12 text-blue-500" />
+            <div>
+              <h3 className="text-4xl md:text-5xl font-bold text-white tracking-tight">25+</h3>
+              <p className="text-lg md:text-xl text-slate-400 font-medium mt-1">Years Experience</p>
             </div>
           </div>
         </div>
