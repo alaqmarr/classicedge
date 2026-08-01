@@ -56,6 +56,10 @@ export default function AdminLayout({
             <FileBadge className="w-5 h-5 text-slate-400" />
             <span>Certificates</span>
           </Link>
+          <Link href="/admin/contact" onClick={() => setIsSidebarOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-colors">
+            <Phone className="w-5 h-5 text-slate-400" />
+            <span>Contact Offices</span>
+          </Link>
           <Link href="/admin/settings" onClick={() => setIsSidebarOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white/5 transition-colors">
             <Settings className="w-5 h-5 text-slate-400" />
             <span>Site Settings</span>
