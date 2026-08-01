@@ -73,14 +73,32 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-10 border-y border-white/5 bg-white/[0.02]">
-        <div className="container mx-auto px-4 flex justify-center">
-          <div className="flex items-center gap-6 py-4">
-            <Trophy className="w-12 h-12 text-blue-500" />
-            <div>
-              <h3 className="text-4xl md:text-5xl font-bold text-white tracking-tight">25+</h3>
-              <p className="text-lg md:text-xl text-slate-400 font-medium mt-1">Years Experience</p>
+      {/* Heritage / Experience Section */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto relative group">
+            {/* Background Glow */}
+            <div className="absolute inset-0 bg-blue-600/10 blur-3xl rounded-full group-hover:bg-blue-500/20 transition-colors duration-700"></div>
+            
+            {/* Card */}
+            <div className="relative glass-panel rounded-3xl p-8 md:p-12 border border-white/10 flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12 text-center md:text-left overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+              
+              <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-blue-500/20 to-transparent border border-blue-500/30 flex items-center justify-center shrink-0 shadow-[0_0_30px_rgba(37,99,235,0.2)]">
+                <Trophy className="w-12 h-12 text-blue-400" />
+              </div>
+              
+              <div>
+                <h3 className="text-5xl md:text-6xl font-black text-white tracking-tight mb-2">
+                  25<span className="text-blue-500">+</span>
+                </h3>
+                <p className="text-xl md:text-2xl text-slate-300 font-bold uppercase tracking-widest">
+                  Years of Excellence
+                </p>
+                <p className="text-base text-slate-400 mt-4 max-w-lg leading-relaxed">
+                  Pioneering innovation, extreme precision, and absolute reliability in the acrylic fabrication industry since our inception.
+                </p>
+              </div>
             </div>
           </div>
         </div>
