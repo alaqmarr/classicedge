@@ -10,6 +10,11 @@ export default async function Footer() {
     orderBy: { createdAt: "desc" },
     select: { id: true, name: true }
   });
+  const contacts = await prisma.contactInfo.findMany({ take: 1, orderBy: { createdAt: 'asc' } });
+  const mainContact = contacts[0];
+  const phones = mainContact ? mainContact.phone.split(',').map(p => p.trim()).filter(Boolean) : ["+91 98490 50752"];
+  const emails = mainContact ? mainContact.email.split(',').map(e => e.trim()).filter(Boolean) : ["info@classicedge53.com"];
+
   return (
     <footer className="bg-[#020610] pt-12 md:pt-16 pb-8 border-t border-white/10 mt-12 md:mt-20">
       <div className="container mx-auto px-4">
@@ -54,13 +59,17 @@ export default async function Footer() {
           <div>
             <h4 className="font-semibold text-lg mb-4 md:mb-6 text-slate-200">CONNECT WITH US</h4>
             <ul className="space-y-4 text-sm text-slate-400 mb-6">
-              <li className="flex items-center gap-3">
-                <Phone className="w-4 h-4 text-blue-500" />
-                <span>+91 98490 50752</span>
+              <li className="flex items-start gap-3">
+                <Phone className="w-4 h-4 text-blue-500 shrink-0 mt-1" />
+                <div className="flex flex-col gap-1">
+                  {phones.map((p, i) => <span key={i}>{p}</span>)}
+                </div>
               </li>
-              <li className="flex items-center gap-3">
-                <Mail className="w-4 h-4 text-blue-500" />
-                <span>info@classicedge53.com</span>
+              <li className="flex items-start gap-3">
+                <Mail className="w-4 h-4 text-blue-500 shrink-0 mt-1" />
+                <div className="flex flex-col gap-1">
+                  {emails.map((e, i) => <span key={i}>{e}</span>)}
+                </div>
               </li>
             </ul>
             <div className="flex gap-4">

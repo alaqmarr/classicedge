@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { Save, ArrowLeft, Loader2 } from "lucide-react";
+import { Save, ArrowLeft, Loader2, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { createContact } from "@/app/actions/contact";
 import toast from "react-hot-toast";
@@ -11,8 +11,8 @@ import toast from "react-hot-toast";
 type FormValues = {
   title: string;
   address: string;
-  phone: string;
-  email: string;
+  phones: { value: string }[];
+  emails: { value: string }[];
   mapEmbedUrl?: string;
 };
 
@@ -20,12 +20,38 @@ export default function NewContactPage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { register, handleSubmit, formState: { errors } } = useForm<FormValues>();
+  const { register, control, handleSubmit, formState: { errors } } = useForm<FormValues>({
+    defaultValues: {
+      phones: [{ value: "" }],
+      emails: [{ value: "" }]
+    }
+  });
+
+  const { fields: phoneFields, append: appendPhone, remove: removePhone } = useFieldArray({
+    control,
+    name: "phones"
+  });
+
+  const { fields: emailFields, append: appendEmail, remove: removeEmail } = useFieldArray({
+    control,
+    name: "emails"
+  });
 
   const onSubmit = async (data: FormValues) => {
     setIsSubmitting(true);
     try {
-      const res = await createContact(data);
+      const phone = data.phones.map(p => p.value.trim()).filter(Boolean).join(', ');
+      const email = data.emails.map(e => e.value.trim()).filter(Boolean).join(', ');
+      
+      const payload = {
+        title: data.title,
+        address: data.address,
+        phone,
+        email,
+        mapEmbedUrl: data.mapEmbedUrl,
+      };
+
+      const res = await createContact(payload);
       if (res.success) {
         toast.success("Contact info saved successfully");
         router.push("/admin/contact");
@@ -72,23 +98,51 @@ export default function NewContactPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-slate-400 mb-2">Phone Number *</label>
-            <input
-              {...register("phone", { required: true })}
-              className="w-full bg-[#050b14] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors"
-              placeholder="+1 234 567 890"
-            />
-            {errors.phone && <span className="text-red-400 text-xs mt-1">Required</span>}
+            <label className="block text-sm font-medium text-slate-400 mb-2">Phone Numbers *</label>
+            <div className="space-y-3">
+              {phoneFields.map((field, index) => (
+                <div key={field.id} className="flex items-center gap-2">
+                  <input
+                    {...register(`phones.${index}.value` as const, { required: true })}
+                    className="flex-1 bg-[#050b14] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors"
+                    placeholder="+1 234 567 890"
+                  />
+                  {phoneFields.length > 1 && (
+                    <button type="button" onClick={() => removePhone(index)} className="p-3 text-slate-400 hover:text-red-400 bg-white/5 rounded-xl transition-colors">
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  )}
+                </div>
+              ))}
+              <button type="button" onClick={() => appendPhone({ value: "" })} className="flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300 transition-colors">
+                <Plus className="w-4 h-4" /> Add another phone
+              </button>
+            </div>
+            {errors.phones && <span className="text-red-400 text-xs mt-1">Required</span>}
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-400 mb-2">Email Address *</label>
-            <input
-              {...register("email", { required: true })}
-              type="email"
-              className="w-full bg-[#050b14] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors"
-              placeholder="contact@company.com"
-            />
-            {errors.email && <span className="text-red-400 text-xs mt-1">Required</span>}
+            <label className="block text-sm font-medium text-slate-400 mb-2">Email Addresses *</label>
+            <div className="space-y-3">
+              {emailFields.map((field, index) => (
+                <div key={field.id} className="flex items-center gap-2">
+                  <input
+                    {...register(`emails.${index}.value` as const, { required: true })}
+                    type="email"
+                    className="flex-1 bg-[#050b14] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors"
+                    placeholder="contact@company.com"
+                  />
+                  {emailFields.length > 1 && (
+                    <button type="button" onClick={() => removeEmail(index)} className="p-3 text-slate-400 hover:text-red-400 bg-white/5 rounded-xl transition-colors">
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  )}
+                </div>
+              ))}
+              <button type="button" onClick={() => appendEmail({ value: "" })} className="flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300 transition-colors">
+                <Plus className="w-4 h-4" /> Add another email
+              </button>
+            </div>
+            {errors.emails && <span className="text-red-400 text-xs mt-1">Required</span>}
           </div>
         </div>
 
@@ -113,3 +167,4 @@ export default function NewContactPage() {
     </div>
   );
 }
+

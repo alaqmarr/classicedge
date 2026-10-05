@@ -5,8 +5,9 @@ import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 
-export default function Navbar() {
+export default function Navbar({ consumableCategories = [] }: { consumableCategories?: string[] }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isConsumablesHovered, setIsConsumablesHovered] = useState(false);
 
   useEffect(() => {
     if (isMobileMenuOpen) {
@@ -30,7 +31,33 @@ export default function Navbar() {
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
           <Link href="/" className="hover:text-blue-400 transition-colors">HOME</Link>
           <Link href="/products" className="hover:text-blue-400 transition-colors">MACHINES</Link>
-          <Link href="/consumables" className="hover:text-blue-400 transition-colors">CONSUMABLES</Link>
+          
+          <div 
+            className="relative"
+            onMouseEnter={() => setIsConsumablesHovered(true)}
+            onMouseLeave={() => setIsConsumablesHovered(false)}
+          >
+            <Link href="/consumables" className="hover:text-blue-400 transition-colors py-2">
+              CONSUMABLES
+            </Link>
+            
+            {isConsumablesHovered && consumableCategories.length > 0 && (
+              <div className="absolute top-full left-0 pt-4 w-48">
+                <div className="bg-[#050b14] border border-white/10 rounded-xl shadow-xl overflow-hidden py-2">
+                  {consumableCategories.map(category => (
+                    <Link 
+                      key={category} 
+                      href={`/consumables#${encodeURIComponent(category)}`}
+                      className="block px-4 py-2 text-slate-300 hover:bg-blue-600 hover:text-white transition-colors"
+                    >
+                      {category}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
           <Link href="/classicconcepts" className="hover:text-blue-400 transition-colors">CLASSIC CONCEPTS</Link>
           <Link href="/#about" className="hover:text-blue-400 transition-colors">ABOUT US</Link>
           <Link href="/certificates" className="hover:text-blue-400 transition-colors">CERTIFICATES</Link>

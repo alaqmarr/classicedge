@@ -24,6 +24,7 @@ export async function createConsumable(data: {
   description?: string;
   keywords?: string;
   image?: string;
+  category?: string;
   price?: number | null;
   productIds: string[];
   modelIds: string[];
@@ -38,6 +39,7 @@ export async function createConsumable(data: {
         description: data.description || null,
         keywords: data.keywords || extractKeywords(data.name, data.description || ""),
         image: data.image || null,
+        category: data.category || null,
         products: {
           connect: data.productIds.map(id => ({ id }))
         },
@@ -79,6 +81,7 @@ export async function updateConsumable(id: string, data: {
   description?: string;
   keywords?: string;
   image?: string;
+  category?: string;
   price?: number | null;
   productIds: string[];
   modelIds: string[];
@@ -91,6 +94,7 @@ export async function updateConsumable(id: string, data: {
         description: data.description || null,
         keywords: data.keywords || extractKeywords(data.name, data.description || ""),
         image: data.image || null,
+        category: data.category || null,
         products: {
           set: [],
           connect: data.productIds.map(pid => ({ id: pid }))
@@ -111,3 +115,19 @@ export async function updateConsumable(id: string, data: {
     return { success: false, error: "Failed to update consumable" };
   }
 }
+
+export async function bulkUpdateConsumableCategory(ids: string[], category: string) {
+  try {
+    await prisma.consumable.updateMany({
+      where: { id: { in: ids } },
+      data: { category }
+    });
+    revalidatePath('/admin/consumables');
+    revalidatePath('/consumables');
+    return { success: true };
+  } catch (error) {
+    console.error('Error bulk updating consumable category:', error);
+    return { success: false, error: 'Failed to update category' };
+  }
+}
+

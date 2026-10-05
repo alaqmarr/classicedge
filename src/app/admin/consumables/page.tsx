@@ -1,7 +1,7 @@
 import prisma from "@/lib/prisma";
 import Link from "next/link";
-import { Plus, Package } from "lucide-react";
-import ConsumableTableRow from "./ConsumableTableRow";
+import { Plus } from "lucide-react";
+import ConsumablesTableClient from "./ConsumablesTableClient";
 
 export const dynamic = "force-dynamic";
 
@@ -27,28 +27,7 @@ export default async function AdminConsumablesPage() {
       </div>
 
       <div className="glass-panel border border-white/5 rounded-2xl overflow-hidden">
-        {consumables.length === 0 ? (
-          <div className="p-12 text-center text-slate-400">
-            <Package className="w-12 h-12 mx-auto mb-4 opacity-50" />
-            <p>No consumables added yet.</p>
-          </div>
-        ) : (
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-white/5 border-b border-white/10">
-                <th className="p-4 font-semibold text-slate-300">Name</th>
-                <th className="p-4 font-semibold text-slate-300">Linked Products</th>
-                <th className="p-4 font-semibold text-slate-300">Linked Models</th>
-                <th className="p-4 font-semibold text-slate-300 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/5">
-              {consumables.map((item) => (
-                <ConsumableTableRow key={item.id} item={item} />
-              ))}
-            </tbody>
-          </table>
-        )}
+        <ConsumablesTableClient consumables={consumables} />
       </div>
     </div>
   );

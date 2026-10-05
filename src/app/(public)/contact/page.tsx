@@ -44,7 +44,11 @@ export default async function ContactPage() {
                     </div>
                     <div>
                       <span className="block text-sm font-medium text-slate-500 mb-1">Phone</span>
-                      <p className="text-slate-200">{contact.phone}</p>
+                      <div className="space-y-1">
+                        {contact.phone.split(',').map((p, i) => (
+                          <p key={i} className="text-slate-200">{p.trim()}</p>
+                        ))}
+                      </div>
                     </div>
                   </div>
 
@@ -54,7 +58,11 @@ export default async function ContactPage() {
                     </div>
                     <div>
                       <span className="block text-sm font-medium text-slate-500 mb-1">Email</span>
-                      <p className="text-slate-200">{contact.email}</p>
+                      <div className="space-y-1">
+                        {contact.email.split(',').map((e, i) => (
+                          <p key={i} className="text-slate-200">{e.trim()}</p>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>

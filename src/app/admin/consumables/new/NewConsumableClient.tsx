@@ -26,6 +26,7 @@ export function ConsumableForm({
     name: initialData?.name || "",
     description: initialData?.description || "",
     keywords: initialData?.keywords || "",
+    category: initialData?.category || "",
     coverImage: initialData?.image ? ([{ url: initialData.image, preview: initialData.image }] as UploadableImage[]) : ([] as UploadableImage[]),
     price: initialData?.price?.toString() || "",
     productIds: initialData?.products?.map((p: any) => p.id) || ([] as string[]),
@@ -59,6 +60,7 @@ export function ConsumableForm({
         name: formData.name,
         description: formData.description,
         keywords: formData.keywords,
+        category: formData.category,
         image: finalImageUrl,
         productIds: formData.productIds,
         modelIds: formData.modelIds
@@ -122,7 +124,7 @@ export function ConsumableForm({
           <h2 className="text-xl font-semibold border-b border-white/10 pb-4">Basic Details</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2 md:col-span-2">
+            <div className="space-y-2 md:col-span-1">
               <label className="text-sm font-medium text-slate-300">Name *</label>
               <input
                 required
@@ -130,6 +132,16 @@ export function ConsumableForm({
                 onChange={e => setFormData(f => ({ ...f, name: e.target.value }))}
                 className="w-full bg-[#050b14] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors"
                 placeholder="e.g. Diamond Polishing Pads (Set of 3)"
+              />
+            </div>
+
+            <div className="space-y-2 md:col-span-1">
+              <label className="text-sm font-medium text-slate-300">Category / Subcategory</label>
+              <input
+                value={formData.category}
+                onChange={e => setFormData(f => ({ ...f, category: e.target.value }))}
+                className="w-full bg-[#050b14] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors"
+                placeholder="e.g. Polishing, Blades, etc."
               />
             </div>
             

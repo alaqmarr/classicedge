@@ -25,8 +25,22 @@ export default async function AdminContactsPage() {
               <h3 className="text-xl font-semibold text-blue-400 mb-4">{contact.title}</h3>
               <div className="space-y-2 text-sm text-slate-400 mb-6">
                 <p><span className="text-slate-300 font-medium">Address:</span> {contact.address}</p>
-                <p><span className="text-slate-300 font-medium">Phone:</span> {contact.phone}</p>
-                <p><span className="text-slate-300 font-medium">Email:</span> {contact.email}</p>
+                <div>
+                  <span className="text-slate-300 font-medium">Phone:</span>
+                  <ul className="list-disc list-inside ml-2">
+                    {contact.phone.split(',').map((p, i) => (
+                      <li key={i}>{p.trim()}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <span className="text-slate-300 font-medium">Email:</span>
+                  <ul className="list-disc list-inside ml-2">
+                    {contact.email.split(',').map((e, i) => (
+                      <li key={i}>{e.trim()}</li>
+                    ))}
+                  </ul>
+                </div>
                 {contact.mapEmbedUrl && (
                   <p className="flex items-center gap-2 mt-4 text-emerald-400 text-xs font-semibold uppercase tracking-wider">
                     <span className="w-2 h-2 rounded-full bg-emerald-500"></span>

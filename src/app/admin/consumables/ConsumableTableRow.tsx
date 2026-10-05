@@ -12,11 +12,20 @@ interface Consumable {
   id: string;
   name: string;
   image: string | null;
+  category?: string | null;
   products: { id: string; name: string }[];
   models: { id: string; modelName: string }[];
 }
 
-export default function ConsumableTableRow({ item }: { item: Consumable }) {
+export default function ConsumableTableRow({ 
+  item, 
+  isSelected, 
+  onToggle 
+}: { 
+  item: Consumable;
+  isSelected?: boolean;
+  onToggle?: () => void;
+}) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
@@ -36,7 +45,17 @@ export default function ConsumableTableRow({ item }: { item: Consumable }) {
 
   return (
     <>
-      <tr className="hover:bg-white/[0.02] transition-colors">
+      <tr className={`transition-colors ${isSelected ? 'bg-blue-900/20' : 'hover:bg-white/[0.02]'}`}>
+        <td className="p-4 w-12">
+          {onToggle && (
+            <input 
+              type="checkbox" 
+              checked={isSelected} 
+              onChange={onToggle}
+              className="rounded border-white/20 bg-transparent"
+            />
+          )}
+        </td>
         <td className="p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded bg-[#050b14] border border-white/10 overflow-hidden relative">
@@ -48,6 +67,15 @@ export default function ConsumableTableRow({ item }: { item: Consumable }) {
             </div>
             <span className="font-semibold text-white">{item.name}</span>
           </div>
+        </td>
+        <td className="p-4 text-slate-300">
+          {item.category ? (
+            <span className="px-2 py-1 bg-purple-500/10 text-purple-400 text-xs rounded-md border border-purple-500/20">
+              {item.category}
+            </span>
+          ) : (
+            <span className="text-slate-500">-</span>
+          )}
         </td>
         <td className="p-4 text-slate-300">
           {item.products.length > 0 ? (
