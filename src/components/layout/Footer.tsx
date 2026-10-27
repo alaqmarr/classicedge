@@ -4,14 +4,23 @@ import { FaFacebook, FaInstagram, FaYoutube, FaLinkedin, FaWhatsapp } from "reac
 import Image from "next/image";
 import prisma from "@/lib/prisma";
 import { getClassicConceptsBrandInfo } from "@/lib/brandInfo";
+import { unstable_cache } from "next/cache";
+
+const getFooterMachines = unstable_cache(
+  async () => {
+    return prisma.product.findMany({
+      take: 4,
+      orderBy: { createdAt: "desc" },
+      select: { id: true, name: true },
+    });
+  },
+  ["footer-machines"],
+  { revalidate: 3600 }
+);
 
 export default async function Footer() {
   const [machines, brandInfo] = await Promise.all([
-    prisma.product.findMany({
-      take: 4,
-      orderBy: { createdAt: "desc" },
-      select: { id: true, name: true }
-    }),
+    getFooterMachines(),
     getClassicConceptsBrandInfo()
   ]);
 

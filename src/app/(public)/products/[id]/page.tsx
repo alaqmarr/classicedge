@@ -7,8 +7,28 @@ import { ArrowLeft, Settings, CheckCircle2, Download, FileText, ChevronRight } f
 import { ProductActionButtons } from "./ProductActionButtons";
 import { ProductGallery } from "./ProductGallery";
 import { getClassicConceptsBrandInfo } from "@/lib/brandInfo";
+import { cache } from "react";
 
 export const revalidate = 3600; // Revalidate every hour
+
+const getProductById = cache(async (id: string) => {
+  return prisma.product.findUnique({
+    where: { id },
+    include: {
+      images: true,
+      resources: true,
+      features: true,
+      specifications: true,
+      consumables: true,
+      models: {
+        include: {
+          specifications: true,
+          resources: true,
+        },
+      },
+    },
+  });
+});
 
 export async function generateStaticParams() {
   const products = await prisma.product.findMany({ select: { id: true } });
@@ -19,9 +39,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
-  const product = await prisma.product.findUnique({
-    where: { id: resolvedParams.id },
-  });
+  const product = await getProductById(resolvedParams.id);
 
   if (!product) {
     return {
@@ -67,22 +85,7 @@ export default async function ProductDetailsPage({ params }: { params: Promise<{
   
   // Fetch product and brand info in parallel
   const [product, brandInfo] = await Promise.all([
-    prisma.product.findUnique({
-      where: { id: resolvedParams.id },
-      include: {
-        images: true,
-        resources: true,
-        features: true,
-        specifications: true,
-        consumables: true,
-        models: {
-          include: {
-            specifications: true,
-            resources: true,
-          }
-        }
-      }
-    }),
+    getProductById(resolvedParams.id),
     getClassicConceptsBrandInfo()
   ]);
 

@@ -51,6 +51,7 @@ export async function createConsumable(data: {
 
     revalidatePath("/admin/consumables");
     revalidatePath("/consumables");
+    revalidatePath("/", "layout");
     revalidatePath("/products/[id]", "page");
     
     return { success: true, consumable };
@@ -68,6 +69,7 @@ export async function deleteConsumable(id: string) {
     
     revalidatePath("/admin/consumables");
     revalidatePath("/consumables");
+    revalidatePath("/", "layout");
     
     return { success: true };
   } catch (error) {
@@ -108,6 +110,7 @@ export async function updateConsumable(id: string, data: {
 
     revalidatePath("/admin/consumables");
     revalidatePath("/consumables");
+    revalidatePath("/", "layout");
     
     return { success: true, consumable };
   } catch (error: any) {
@@ -124,6 +127,7 @@ export async function bulkUpdateConsumableCategory(ids: string[], category: stri
     });
     revalidatePath('/admin/consumables');
     revalidatePath('/consumables');
+    revalidatePath('/', 'layout');
     return { success: true };
   } catch (error) {
     console.error('Error bulk updating consumable category:', error);

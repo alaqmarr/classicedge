@@ -6,8 +6,19 @@ import Link from "next/link";
 import { ArrowLeft, Package, ChevronRight } from "lucide-react";
 import { ProductActionButtons } from "@/app/(public)/products/[id]/ProductActionButtons";
 import { getClassicConceptsBrandInfo } from "@/lib/brandInfo";
+import { cache } from "react";
 
 export const revalidate = 3600; // Revalidate every hour
+
+const getConsumableById = cache(async (id: string) => {
+  return prisma.consumable.findUnique({
+    where: { id },
+    include: {
+      products: true,
+      models: true,
+    },
+  });
+});
 
 export async function generateStaticParams() {
   const consumables = await prisma.consumable.findMany({ select: { id: true } });
@@ -18,9 +29,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
-  const consumable = await prisma.consumable.findUnique({
-    where: { id: resolvedParams.id },
-  });
+  const consumable = await getConsumableById(resolvedParams.id);
 
   if (!consumable) {
     return {
@@ -65,13 +74,7 @@ export default async function ConsumableDetailsPage({ params }: { params: Promis
   const resolvedParams = await params;
   
   const [consumable, brandInfo] = await Promise.all([
-    prisma.consumable.findUnique({
-      where: { id: resolvedParams.id },
-      include: {
-        products: true,
-        models: true
-      }
-    }),
+    getConsumableById(resolvedParams.id),
     getClassicConceptsBrandInfo()
   ]);
 
