@@ -3,7 +3,7 @@ import { Inter, Outfit, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { FloatingWhatsApp } from "@/components/ui/FloatingWhatsApp";
-import prisma from "@/lib/prisma";
+import { getClassicConceptsBrandInfo } from "@/lib/brandInfo";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -52,13 +52,13 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const settings = await prisma.siteSettings.findFirst();
+  const brandInfo = await getClassicConceptsBrandInfo();
 
   return (
     <html lang="en" className={`${inter.variable} ${outfit.variable} ${jetbrainsMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-slate-950 text-slate-50">
         {children}
-        <FloatingWhatsApp phoneNumber={settings?.whatsappNumber || null} />
+        <FloatingWhatsApp phoneNumber={brandInfo?.contact?.whatsappNumber || null} />
         <Toaster position="bottom-right" toastOptions={{
           style: {
             background: '#1e293b',

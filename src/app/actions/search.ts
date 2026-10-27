@@ -15,7 +15,8 @@ const STATIC_PAGES = [
   { id: "page-home", title: "Home", description: "Classic Edge 53 Official Website - Precision Acrylic Fabrication", url: "/", keywords: ["home", "main", "start", "classic edge", "acrylic fabrication"] },
   { id: "page-machines", title: "Machines", description: "Explore our range of high-precision acrylic fabrication machines.", url: "/products", keywords: ["machines", "products", "equipment", "diamond polishing", "flame polishing", "acrylic bending"] },
   { id: "page-consumables", title: "Consumables", description: "High-quality parts and accessories matched perfectly to your machines.", url: "/consumables", keywords: ["consumables", "parts", "accessories", "spares", "maintenance"] },
-  { id: "page-classic-concepts", title: "Classic Concepts", description: "Showcasing our completed projects and acrylic fabrication concepts.", url: "/classic-concepts", keywords: ["concepts", "projects", "gallery", "portfolio", "examples"] },
+  { id: "page-classic-concepts", title: "Classic Concepts", description: "Showcasing our completed projects and acrylic fabrication concepts.", url: "/classicconcepts", keywords: ["concepts", "projects", "gallery", "portfolio", "examples"] },
+  { id: "page-about", title: "About Us", description: "Learn about Classic Edge 53, our heritage, leadership team, and branches.", url: "/about", keywords: ["about", "company", "team", "history", "branches", "clients"] },
   { id: "page-certificates", title: "Certificates", description: "View our awards, ISO certifications, and recognitions.", url: "/certificates", keywords: ["certificates", "awards", "iso", "recognition", "quality"] },
   { id: "page-contact", title: "Contact Us", description: "Get in touch with us for inquiries, support, and sales.", url: "/contact", keywords: ["contact", "support", "email", "phone", "location", "address", "enquire"] },
 ];

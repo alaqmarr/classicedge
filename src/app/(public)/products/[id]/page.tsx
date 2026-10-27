@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ArrowLeft, Settings, CheckCircle2, Download, FileText, ChevronRight } from "lucide-react";
 import { ProductActionButtons } from "./ProductActionButtons";
 import { ProductGallery } from "./ProductGallery";
+import { getClassicConceptsBrandInfo } from "@/lib/brandInfo";
 
 export const revalidate = 3600; // Revalidate every hour
 
@@ -64,8 +65,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 export default async function ProductDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
   
-  // Fetch product and settings in parallel
-  const [product, settings] = await Promise.all([
+  // Fetch product and brand info in parallel
+  const [product, brandInfo] = await Promise.all([
     prisma.product.findUnique({
       where: { id: resolvedParams.id },
       include: {
@@ -82,7 +83,7 @@ export default async function ProductDetailsPage({ params }: { params: Promise<{
         }
       }
     }),
-    prisma.siteSettings.findFirst()
+    getClassicConceptsBrandInfo()
   ]);
 
   if (!product) {
@@ -150,7 +151,7 @@ export default async function ProductDetailsPage({ params }: { params: Promise<{
 
           <ProductActionButtons 
             productName={product.name} 
-            whatsappNumber={settings?.whatsappNumber || null} 
+            whatsappNumber={brandInfo?.contact?.whatsappNumber || null} 
           />
 
           {/* Root level resources */}

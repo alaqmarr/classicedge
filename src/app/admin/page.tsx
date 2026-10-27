@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { getClassicConceptsBrandInfo } from "@/lib/brandInfo";
 import { Package, Inbox, FileBadge, Settings, Plus, ArrowRight, Activity, Cpu } from "lucide-react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
@@ -11,18 +12,20 @@ export default async function AdminDashboard() {
     totalProducts,
     totalConsumables,
     totalEnquiries,
-    totalCertificates,
+    brandInfo,
     recentEnquiries
   ] = await Promise.all([
     prisma.product.count(),
     prisma.consumable.count(),
     prisma.enquiry.count(),
-    prisma.certificate.count(),
+    getClassicConceptsBrandInfo(),
     prisma.enquiry.findMany({
       take: 5,
       orderBy: { createdAt: 'desc' }
     })
   ]);
+
+  const totalCertificates = brandInfo?.brand?.certifications?.allCertificates?.length || 0;
 
   const stats = [
     { label: "Total Products", value: totalProducts, icon: Package, color: "text-blue-500", bg: "bg-blue-500/10" },

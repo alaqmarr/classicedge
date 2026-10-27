@@ -1,19 +1,25 @@
 import Link from "next/link";
-import { Mail, Phone } from "lucide-react";
-import { FaFacebook, FaInstagram, FaYoutube, FaLinkedin } from "react-icons/fa";
+import { Mail, Phone, MapPin } from "lucide-react";
+import { FaFacebook, FaInstagram, FaYoutube, FaLinkedin, FaWhatsapp } from "react-icons/fa";
 import Image from "next/image";
 import prisma from "@/lib/prisma";
+import { getClassicConceptsBrandInfo } from "@/lib/brandInfo";
 
 export default async function Footer() {
-  const machines = await prisma.product.findMany({
-    take: 4,
-    orderBy: { createdAt: "desc" },
-    select: { id: true, name: true }
-  });
-  const contacts = await prisma.contactInfo.findMany({ take: 1, orderBy: { createdAt: 'asc' } });
-  const mainContact = contacts[0];
-  const phones = mainContact ? mainContact.phone.split(',').map(p => p.trim()).filter(Boolean) : ["+91 98490 50752"];
-  const emails = mainContact ? mainContact.email.split(',').map(e => e.trim()).filter(Boolean) : ["info@classicedge53.com"];
+  const [machines, brandInfo] = await Promise.all([
+    prisma.product.findMany({
+      take: 4,
+      orderBy: { createdAt: "desc" },
+      select: { id: true, name: true }
+    }),
+    getClassicConceptsBrandInfo()
+  ]);
+
+  const contact = brandInfo?.contact;
+  const phones = contact?.phones?.length ? contact.phones : ["+91 98490 50752"];
+  const emails = contact?.emails?.length ? contact.emails : ["info@classicedge53.com"];
+  const address = contact?.address;
+  const whatsappNumber = contact?.whatsappNumber;
 
   return (
     <footer className="bg-[#020610] pt-12 md:pt-16 pb-8 border-t border-white/10 mt-12 md:mt-20">
@@ -24,7 +30,7 @@ export default async function Footer() {
               <Image src="/logo.png" alt="Classic Edge 53" width={200} height={55} className="object-contain w-[200px] h-auto" />
             </div>
             <p className="text-sm text-slate-400 mb-4 leading-relaxed">
-              Classic Edge 53 is a brand of Classic Concepts. We manufacture high precision acrylic processing machines for acrylic fabrication companies across the world.
+              Classic Edge 53 is a brand of {brandInfo?.brand?.companyName || "Classic Concepts"}. We manufacture high precision acrylic processing machines for acrylic fabrication companies across the world.
             </p>
           </div>
 
@@ -34,7 +40,8 @@ export default async function Footer() {
               <li><Link href="/" className="hover:text-blue-400 transition-colors">Home</Link></li>
               <li><Link href="/products" className="hover:text-blue-400 transition-colors">Machines</Link></li>
               <li><Link href="/consumables" className="hover:text-blue-400 transition-colors">Consumables</Link></li>
-              <li><Link href="/classic-concepts" className="hover:text-blue-400 transition-colors">Classic Concepts</Link></li>
+              <li><Link href="/classicconcepts" className="hover:text-blue-400 transition-colors">Classic Concepts</Link></li>
+              <li><Link href="/about" className="hover:text-blue-400 transition-colors">About Us</Link></li>
               <li><Link href="/certificates" className="hover:text-blue-400 transition-colors">Certificates</Link></li>
               <li><Link href="/contact" className="hover:text-blue-400 transition-colors">Contact Us</Link></li>
             </ul>
@@ -59,16 +66,43 @@ export default async function Footer() {
           <div>
             <h4 className="font-semibold text-lg mb-4 md:mb-6 text-slate-200">CONNECT WITH US</h4>
             <ul className="space-y-4 text-sm text-slate-400 mb-6">
+              {address && (
+                <li className="flex items-start gap-3">
+                  <MapPin className="w-4 h-4 text-blue-500 shrink-0 mt-1" />
+                  <span className="leading-relaxed">{address}</span>
+                </li>
+              )}
               <li className="flex items-start gap-3">
                 <Phone className="w-4 h-4 text-blue-500 shrink-0 mt-1" />
                 <div className="flex flex-col gap-1">
-                  {phones.map((p, i) => <span key={i}>{p}</span>)}
+                  {phones.map((p, i) => (
+                    <a key={i} href={`tel:${p.replace(/\s+/g, "")}`} className="hover:text-blue-400 transition-colors">
+                      {p}
+                    </a>
+                  ))}
                 </div>
               </li>
+              {whatsappNumber && (
+                <li className="flex items-start gap-3">
+                  <FaWhatsapp className="w-4 h-4 text-emerald-500 shrink-0 mt-1" />
+                  <a
+                    href={contact?.whatsappUrl || `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, "")}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-emerald-400 transition-colors"
+                  >
+                    {whatsappNumber}
+                  </a>
+                </li>
+              )}
               <li className="flex items-start gap-3">
                 <Mail className="w-4 h-4 text-blue-500 shrink-0 mt-1" />
                 <div className="flex flex-col gap-1">
-                  {emails.map((e, i) => <span key={i}>{e}</span>)}
+                  {emails.map((e, i) => (
+                    <a key={i} href={`mailto:${e.trim()}`} className="hover:text-blue-400 transition-colors">
+                      {e}
+                    </a>
+                  ))}
                 </div>
               </li>
             </ul>

@@ -59,7 +59,7 @@ export default function Navbar({ consumableCategories = [] }: { consumableCatego
           </div>
 
           <Link href="/classicconcepts" className="hover:text-blue-400 transition-colors">CLASSIC CONCEPTS</Link>
-          <Link href="/#about" className="hover:text-blue-400 transition-colors">ABOUT US</Link>
+          <Link href="/about" className="hover:text-blue-400 transition-colors">ABOUT US</Link>
           <Link href="/certificates" className="hover:text-blue-400 transition-colors">CERTIFICATES</Link>
           <Link href="/contact" className="hover:text-blue-400 transition-colors">CONTACT US</Link>
         </nav>
@@ -88,7 +88,7 @@ export default function Navbar({ consumableCategories = [] }: { consumableCatego
             <Link href="/products" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-blue-400 transition-colors">MACHINES</Link>
             <Link href="/consumables" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-blue-400 transition-colors">CONSUMABLES</Link>
             <Link href="/classicconcepts" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-blue-400 transition-colors">CLASSIC CONCEPTS</Link>
-            <Link href="/#about" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-blue-400 transition-colors">ABOUT US</Link>
+            <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-blue-400 transition-colors">ABOUT US</Link>
             <Link href="/certificates" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-blue-400 transition-colors">CERTIFICATES</Link>
             <Link href="/contact" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-blue-400 transition-colors">CONTACT US</Link>
             <Link href="/contact" onClick={() => setIsMobileMenuOpen(false)} className="mt-4 bg-blue-600 hover:bg-blue-700 text-white text-center py-3 rounded-xl font-medium transition-all shadow-[0_0_15px_rgba(37,99,235,0.5)]">
