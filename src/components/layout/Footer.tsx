@@ -126,9 +126,10 @@ export default async function Footer() {
         
         <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between text-sm text-slate-500">
           <p>© {new Date().getFullYear()} Classic Edge 53. All Rights Reserved.</p>
-          <div className="flex gap-4 mt-4 md:mt-0">
-            <Link href="/privacy" className="hover:text-slate-300">Privacy Policy</Link>
-            <Link href="/terms" className="hover:text-slate-300">Terms & Conditions</Link>
+          <div className="flex flex-wrap items-center gap-4 mt-4 md:mt-0">
+            <Link href="/privacy-policy" className="hover:text-slate-300">Privacy Policy</Link>
+            <Link href="/terms-of-service" className="hover:text-slate-300">Terms of Service</Link>
+            <Link href="/data-deletion" className="hover:text-slate-300">Data Deletion</Link>
           </div>
         </div>
       </div>
