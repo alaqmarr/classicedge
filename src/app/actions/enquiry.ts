@@ -1,7 +1,12 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { sendClientThankYouEmail, sendAdminEnquiryEmail, sendAdminReplyEmail } from "@/lib/email";
+import {
+  sendClientThankYouEmail,
+  sendAdminEnquiryEmail,
+  sendAdminReplyEmail,
+} from "@/lib/email";
+import { pushClassicEdgeEnquiryToWhatsAppHub } from "@/lib/whatsapp-bridge";
 import { revalidatePath } from "next/cache";
 
 export async function submitEnquiry(data: {
@@ -20,17 +25,46 @@ export async function submitEnquiry(data: {
         phone: data.phone,
         message: data.message,
         productName: data.productName,
-      }
+      },
     });
 
-    // 2. Send Emails (Non-blocking ideally, but we await to ensure delivery status if needed. 
-    // In production, might want to send these asynchronously without awaiting to speed up response)
+    // 2. Evaluate immediately via WhatsApp Hub (:3007 -> Claude Haiku 5.5 + Sales Routing + Staff Email Alert)
+    //    and send a smart, machine-specific reply email first (falling back to thank-you email if unavailable).
     try {
-      await sendClientThankYouEmail(data.email, data.name);
-      await sendAdminEnquiryEmail(data);
+      await sendAdminEnquiryEmail(data).catch((e) =>
+        console.error("Admin email error:", e)
+      );
+
+      const hubResult = await pushClassicEdgeEnquiryToWhatsAppHub({
+        enquiryId: enquiry.id,
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        message: data.message,
+        productName: data.productName,
+      });
+
+      if (hubResult.ok && hubResult.emailDispatchedByHub) {
+        await prisma.enquiry
+          .update({
+            where: { id: enquiry.id },
+            data: { repliedAt: new Date() },
+          })
+          .catch(() => null);
+      } else if (hubResult.smartReplyText) {
+        await sendAdminReplyEmail(data.email, data.name, hubResult.smartReplyText);
+        await prisma.enquiry
+          .update({
+            where: { id: enquiry.id },
+            data: { repliedAt: new Date() },
+          })
+          .catch(() => null);
+      } else {
+        await sendClientThankYouEmail(data.email, data.name);
+      }
     } catch (emailError) {
-      console.error("Error sending emails:", emailError);
-      // We still return success since the enquiry was saved, but log the email failure
+      console.error("Error sending enquiry emails:", emailError);
+      await sendClientThankYouEmail(data.email, data.name).catch(() => null);
     }
 
     revalidatePath("/admin/enquiries");
@@ -48,13 +82,11 @@ export async function replyToEnquiry(enquiryId: string, replyMessage: string) {
       return { success: false, error: "Enquiry not found" };
     }
 
-    // Send the reply email
     await sendAdminReplyEmail(enquiry.email, enquiry.name, replyMessage);
 
-    // Update database
     await prisma.enquiry.update({
       where: { id: enquiryId },
-      data: { repliedAt: new Date() }
+      data: { repliedAt: new Date() },
     });
 
     revalidatePath("/admin/enquiries");
@@ -67,6 +99,6 @@ export async function replyToEnquiry(enquiryId: string, replyMessage: string) {
 
 export async function getEnquiries() {
   return await prisma.enquiry.findMany({
-    orderBy: { createdAt: 'desc' }
+    orderBy: { createdAt: "desc" },
   });
 }
