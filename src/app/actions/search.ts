@@ -27,42 +27,42 @@ const FALLBACK_CE53_MACHINES = [
     id: "ce53-diamond-edge-polisher",
     name: "Acrylic Diamond Edge Polishing Machine",
     description: "Industrial CNC diamond edge polisher for optical-clarity crystal finishes on thick cast acrylic sheets (3mm to 100mm+).",
-    keywords: "diamond edge polishing machine polisher crystal finish cast acrylic thick sheet",
+    keywords: "diamond edge polishing machine polisher crystal finish cast acrylic thick sheet yn-jw1200 yn-jw1600 1200mm 1600mm 9000 rpm pcd",
     coverImage: null,
   },
   {
     id: "ce53-acrylic-line-bender",
     name: "Acrylic Bending Machine & Strip Heater",
     description: "Precision temperature-controlled quartz heating line bender for clean, bubble-free right-angle and multi-angle acrylic bends.",
-    keywords: "acrylic bending machine strip heater line bender quartz heating bend",
+    keywords: "acrylic bending machine strip heater line bender quartz heating bend abm-1250 abm-2400 1250mm 2400mm pid water cooling",
     coverImage: null,
   },
   {
     id: "ce53-laser-cutting-system",
     name: "Acrylic Laser Cutting & Engraving Machine",
     description: "High-precision CO2 laser cutting and engraving system engineered for polished-edge cast acrylic fabrication.",
-    keywords: "acrylic laser cutting machine co2 engraver cutter sheet fabrication",
+    keywords: "acrylic laser cutting machine co2 engraver cutter sheet fabrication ce-lc1390 ce-lc1325 1300x900 1300x2500",
     coverImage: null,
   },
   {
     id: "ce53-cnc-router-acrylic",
     name: "CNC Router for Acrylic & Engineering Plastics",
     description: "Heavy-duty 3-axis CNC routing and bevelling center for thick acrylic blocks, trophies, signages, and industrial guards.",
-    keywords: "cnc router acrylic routing bevelling machine plastics",
+    keywords: "cnc router acrylic routing bevelling machine plastics ce-cnc1325 24000 rpm vacuum table",
     coverImage: null,
   },
   {
     id: "ce53-flame-polishing-unit",
     name: "HHO Acrylic Flame Polishing Machine",
     description: "Oxy-hydrogen flame polishing machine for rapid edge polishing of intricate laser-cut or routed acrylic contours.",
-    keywords: "flame polishing machine hho oxy hydrogen edge polisher",
+    keywords: "flame polishing machine hho oxy hydrogen edge polisher ce-fp160 ce-fp260 electrolytic",
     coverImage: null,
   },
   {
     id: "ce53-thermoforming-oven",
     name: "Acrylic Thermoforming & Draping Oven",
     description: "Uniform forced-air circulation industrial oven for heating cast acrylic sheets prior to dome blowing, molding, or thermoforming.",
-    keywords: "acrylic thermoforming oven heating draping dome blowing molding",
+    keywords: "acrylic thermoforming oven heating draping dome blowing molding ce-to1525 forced air",
     coverImage: null,
   },
 ];
@@ -243,9 +243,23 @@ export async function globalSearch(query: string): Promise<SearchResult[]> {
     url: page.url,
   }));
 
-  // 2. Fetch and score Database (Products and Consumables) with tokenized + synonym matching
+  // 2. Fetch and score Database (Products and Consumables) with tokenized + synonym + deep spec/model/feature matching
   const [rawProducts, rawConsumables] = await Promise.all([
-    excludeMachines ? Promise.resolve([]) : prisma.product.findMany(),
+    excludeMachines
+      ? Promise.resolve([])
+      : prisma.product.findMany({
+          include: {
+            features: true,
+            specifications: true,
+            resources: true,
+            models: {
+              include: {
+                specifications: true,
+                resources: true,
+              },
+            },
+          },
+        }),
     excludeConsumables ? Promise.resolve([]) : prisma.consumable.findMany(),
   ]);
 
@@ -272,7 +286,7 @@ export async function globalSearch(query: string): Promise<SearchResult[]> {
   ): number => {
     const nameLower = name.toLowerCase();
     const descLower = (description || "").toLowerCase();
-    const kwLower = (keywords || "").toLowerCase();
+    const kwLower = `${keywords || ""} ${extraBlob}`.toLowerCase();
 
     if (
       nameLower.includes(normalizedQuery) ||
@@ -287,7 +301,7 @@ export async function globalSearch(query: string): Promise<SearchResult[]> {
     }
 
     const nameWords = tokenizeCe53(nameLower);
-    const kwWords = tokenizeCe53(`${kwLower} ${extraBlob}`);
+    const kwWords = tokenizeCe53(kwLower);
     const descWords = tokenizeCe53(descLower);
 
     let score = 0;
@@ -304,10 +318,29 @@ export async function globalSearch(query: string): Promise<SearchResult[]> {
   };
 
   const productResults = allProducts
-    .map((p) => ({
-      product: p,
-      score: scoreItem(p.name, p.description, p.keywords),
-    }))
+    .map((p: any) => {
+      const deepExtra = [
+        ...(Array.isArray(p.features) ? p.features.map((f: any) => f.text || f) : []),
+        ...(Array.isArray(p.specifications)
+          ? p.specifications.map((s: any) => `${s.key || ""} ${s.value || ""}`)
+          : []),
+        ...(Array.isArray(p.models)
+          ? p.models.map(
+              (m: any) =>
+                `${m.modelName || ""} ${
+                  Array.isArray(m.specifications)
+                    ? m.specifications.map((s: any) => `${s.key || ""} ${s.value || ""}`).join(" ")
+                    : ""
+                }`
+            )
+          : []),
+        ...(Array.isArray(p.resources) ? p.resources.map((r: any) => r.name || "") : []),
+      ].join(" ");
+      return {
+        product: p,
+        score: scoreItem(p.name, p.description, p.keywords, deepExtra),
+      };
+    })
     .filter((x) => x.score >= 14)
     .sort((a, b) => b.score - a.score)
     .slice(0, 5)
