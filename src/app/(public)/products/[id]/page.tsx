@@ -9,7 +9,7 @@ import { ProductGallery } from "./ProductGallery";
 import { getClassicConceptsBrandInfo } from "@/lib/brandInfo";
 import { cache } from "react";
 
-export const revalidate = 3600; // Revalidate every hour
+export const revalidate = 3600; // Revalidate every hour (on-demand ISR, avoids build-time SQLite socket exhaustion)
 
 const getProductById = cache(async (id: string) => {
   return prisma.product.findUnique({
@@ -29,13 +29,6 @@ const getProductById = cache(async (id: string) => {
     },
   });
 });
-
-export async function generateStaticParams() {
-  const products = await prisma.product.findMany({ select: { id: true } });
-  return products.map((product) => ({
-    id: product.id,
-  }));
-}
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const resolvedParams = await params;

@@ -92,6 +92,7 @@ export async function getClassicConceptsBrandInfo(): Promise<ClassicConceptsBran
   try {
     const res = await fetch("https://classicconcepts.in/api/brand-info", {
       next: { revalidate: 60 },
+      signal: AbortSignal.timeout(4000),
     });
     if (!res.ok) {
       console.error("Failed to fetch Classic Concepts brand info:", res.status);

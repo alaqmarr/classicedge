@@ -8,7 +8,7 @@ import { ProductActionButtons } from "@/app/(public)/products/[id]/ProductAction
 import { getClassicConceptsBrandInfo } from "@/lib/brandInfo";
 import { cache } from "react";
 
-export const revalidate = 3600; // Revalidate every hour
+export const revalidate = 3600; // Revalidate every hour (on-demand ISR, avoids build-time SQLite socket exhaustion)
 
 const getConsumableById = cache(async (id: string) => {
   return prisma.consumable.findUnique({
@@ -19,13 +19,6 @@ const getConsumableById = cache(async (id: string) => {
     },
   });
 });
-
-export async function generateStaticParams() {
-  const consumables = await prisma.consumable.findMany({ select: { id: true } });
-  return consumables.map((c) => ({
-    id: c.id,
-  }));
-}
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const resolvedParams = await params;
