@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 import { extractKeywords } from "@/lib/keywords"
 import { generateSlug } from "@/lib/slugify"
+import { notifyWhatsAppHubCatalogSync } from "@/lib/whatsapp-bridge"
 
 async function getUniqueProductId(name: string): Promise<string> {
   let baseSlug = generateSlug(name);
@@ -67,6 +68,7 @@ export async function createProduct(data: {
     
     revalidatePath("/admin/products");
     revalidatePath("/products");
+    void notifyWhatsAppHubCatalogSync(`ce53_product_action_create:${product.id}`);
     
     return { success: true, product };
   } catch (error) {
@@ -98,6 +100,7 @@ export async function deleteProduct(id: string) {
     
     revalidatePath("/admin/products");
     revalidatePath("/products");
+    void notifyWhatsAppHubCatalogSync(`ce53_product_action_delete:${id}`);
     
     return { success: true };
   } catch (error) {
@@ -148,6 +151,7 @@ export async function updateProduct(id: string, data: {
     revalidatePath("/admin/products");
     revalidatePath("/products");
     revalidatePath(`/products/${id}`);
+    void notifyWhatsAppHubCatalogSync(`ce53_product_action_update:${id}`);
     
     return { success: true, product };
   } catch (error) {

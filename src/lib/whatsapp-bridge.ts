@@ -99,3 +99,29 @@ export async function pushClassicEdgeEnquiryToWhatsAppHub(params: {
   }
   return { ok: false };
 }
+
+export async function notifyWhatsAppHubCatalogSync(
+  reason = "classic_edge_catalog_mutation"
+): Promise<boolean> {
+  for (const baseUrl of getWhatsAppHubInternalUrls()) {
+    try {
+      const res = await fetch(`${baseUrl}/api/cache/sync`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-cc-bridge-key": CC_BRIDGE_KEY,
+        },
+        body: JSON.stringify({
+          action: "sync",
+          brand: "CLASSIC_EDGE_53",
+          reason,
+        }),
+        signal: AbortSignal.timeout(3500),
+      });
+      if (res.ok) return true;
+    } catch {
+      // Non-blocking if Hub is offline in local dev
+    }
+  }
+  return false;
+}

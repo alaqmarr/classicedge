@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { generateSlug } from "@/lib/slugify";
+import { notifyWhatsAppHubCatalogSync } from "@/lib/whatsapp-bridge";
 
 export async function POST(req: Request) {
   try {
@@ -68,6 +69,7 @@ export async function POST(req: Request) {
     revalidatePath("/");
     revalidatePath("/products");
     revalidatePath("/admin/products");
+    void notifyWhatsAppHubCatalogSync(`ce53_machine_create:${product.id}`);
 
     return NextResponse.json(product);
   } catch (error) {

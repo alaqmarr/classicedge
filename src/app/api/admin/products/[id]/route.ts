@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { notifyWhatsAppHubCatalogSync } from "@/lib/whatsapp-bridge";
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -66,6 +67,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     revalidatePath("/products");
     revalidatePath(`/products/${id}`);
     revalidatePath("/admin/products");
+    void notifyWhatsAppHubCatalogSync(`ce53_machine_update:${id}`);
 
     return NextResponse.json(product);
   } catch (error) {

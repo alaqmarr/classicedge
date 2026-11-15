@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { extractKeywords } from "@/lib/keywords";
 import { generateSlug } from "@/lib/slugify";
+import { notifyWhatsAppHubCatalogSync } from "@/lib/whatsapp-bridge";
 
 async function getUniqueConsumableId(name: string): Promise<string> {
   let baseSlug = generateSlug(name);
@@ -53,6 +54,7 @@ export async function createConsumable(data: {
     revalidatePath("/consumables");
     revalidatePath("/", "layout");
     revalidatePath("/products/[id]", "page");
+    void notifyWhatsAppHubCatalogSync(`ce53_consumable_create:${consumable.id}`);
     
     return { success: true, consumable };
   } catch (error: any) {
@@ -70,6 +72,7 @@ export async function deleteConsumable(id: string) {
     revalidatePath("/admin/consumables");
     revalidatePath("/consumables");
     revalidatePath("/", "layout");
+    void notifyWhatsAppHubCatalogSync(`ce53_consumable_mutation:${id}`);
     
     return { success: true };
   } catch (error) {
@@ -111,6 +114,7 @@ export async function updateConsumable(id: string, data: {
     revalidatePath("/admin/consumables");
     revalidatePath("/consumables");
     revalidatePath("/", "layout");
+    void notifyWhatsAppHubCatalogSync(`ce53_consumable_update:${id}`);
     
     return { success: true, consumable };
   } catch (error: any) {
