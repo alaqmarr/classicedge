@@ -95,7 +95,7 @@ export default async function ClassicEdgePrivacyPolicyPage() {
               <strong>track.ccapl.cc</strong> or <strong>track.ccapl.in</strong>
               , connect through a Meta Login dialog, or message our official
               WhatsApp Business account and customer desk at{" "}
-              <strong>whatsapp.ccapl.cc</strong>.
+              <strong>chat.ccapl.cc</strong>.
             </p>
           </section>
 
