@@ -1,6 +1,7 @@
 "use server";
 
 import prisma from "@/lib/prisma";
+import { logClassicEdgeAiTrace } from "@/lib/ai-logger";
 
 export type SearchResult = {
   id: string;
@@ -22,6 +23,7 @@ const STATIC_PAGES = [
 ];
 
 export async function globalSearch(query: string): Promise<SearchResult[]> {
+  const startedAt = Date.now();
   if (!query || query.trim().length < 2) {
     return [];
   }
@@ -83,6 +85,50 @@ export async function globalSearch(query: string): Promise<SearchResult[]> {
     image: c.image
   }));
 
+  const combined = [...pageResults, ...productResults, ...consumableResults];
+
+  logClassicEdgeAiTrace({
+    feature: "Classic Edge 53 Global Search",
+    actor: "Website Visitor",
+    question: query.trim(),
+    model: "ce53-catalog-index",
+    outcomeSource: "LOCAL_FALLBACK",
+    responseCacheStatus: "LOCAL_ONLY",
+    catalogCacheStatus: "HIT",
+    cacheDetails: "Direct SQLite machine & consumable lookup",
+    productLookupTriggered: true,
+    productLookupQuery: normalizedQuery,
+    productLookupTotalScanned: products.length + consumables.length + STATIC_PAGES.length,
+    productsLookedUp: [
+      ...productResults.map((p) => ({
+        name: p.title,
+        brand: "CLASSIC_EDGE_53",
+        itemType: "MACHINE",
+        url: p.url,
+      })),
+      ...consumableResults.map((c) => ({
+        name: c.title,
+        brand: "CLASSIC_EDGE_53",
+        itemType: "CONSUMABLE",
+        url: c.url,
+      })),
+    ],
+    steps: [
+      {
+        stepNumber: 1,
+        label: "Searched Classic Edge 53 machines, consumables, and static pages",
+        detail: `machines=${productResults.length}, consumables=${consumableResults.length}, pages=${pageResults.length}`,
+        durationMs: Date.now() - startedAt,
+        status: "OK",
+      },
+    ],
+    response:
+      combined.length > 0
+        ? `Matched ${combined.length} items: ${combined.map((r) => r.title).join(", ")}`
+        : "0 matching machines or consumables",
+    durationMs: Date.now() - startedAt,
+  });
+
   // Combine and return results
-  return [...pageResults, ...productResults, ...consumableResults];
+  return combined;
 }

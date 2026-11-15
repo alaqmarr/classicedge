@@ -5,10 +5,22 @@
 export const CC_BRIDGE_KEY =
   (process.env.CC_ECOSYSTEM_BRIDGE_KEY || "cc_internal_bridge_2026").trim();
 
+export function getWhatsAppHubInternalUrls(): string[] {
+  return Array.from(
+    new Set(
+      [
+        process.env.CCWHATSAPP_INTERNAL_URL,
+        "http://127.0.0.1:3007",
+        "http://127.0.0.1:3000",
+      ]
+        .filter(Boolean)
+        .map((u) => String(u).replace(/\/+$/, ""))
+    )
+  );
+}
+
 export function getWhatsAppHubInternalUrl(): string {
-  return (
-    process.env.CCWHATSAPP_INTERNAL_URL || "http://127.0.0.1:3007"
-  ).replace(/\/+$/, "");
+  return getWhatsAppHubInternalUrls()[0] || "http://127.0.0.1:3007";
 }
 
 export function isAuthorizedInternalBridgeRequest(req: Request): boolean {
@@ -49,39 +61,41 @@ export async function pushClassicEdgeEnquiryToWhatsAppHub(params: {
   message: string;
   productName?: string;
 }): Promise<SmartEnquiryEvaluationResult> {
-  const baseUrl = getWhatsAppHubInternalUrl();
-  try {
-    const res = await fetch(`${baseUrl}/api/internal/website-enquiry`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-cc-bridge-key": CC_BRIDGE_KEY,
-      },
-      body: JSON.stringify({
-        event: "WEBSITE_ENQUIRY",
-        brand: "CLASSIC_EDGE_53",
-        sourcePort: 3002,
-        source: params.productName
-          ? `Classic Edge 53 (${params.productName})`
-          : "Classic Edge 53 Website",
-        ...params,
-      }),
-      signal: AbortSignal.timeout(7500),
-    });
-    if (!res.ok) return { ok: false };
-    const data = await res.json().catch(() => ({}));
-    return {
-      ok: Boolean(data?.ok),
-      conversationId: data?.conversationId,
-      smartReplyText:
-        typeof data?.smartReplyText === "string" ? data.smartReplyText : undefined,
-      smartCategory: data?.smartCategory,
-      assignedStaffName: data?.assignedStaffName ?? null,
-      assignedTeamName: data?.assignedTeamName ?? null,
-      whatsappDispatched: Boolean(data?.whatsappDispatched),
-      emailDispatchedByHub: Boolean(data?.emailDispatchedByHub),
-    };
-  } catch {
-    return { ok: false };
+  for (const baseUrl of getWhatsAppHubInternalUrls()) {
+    try {
+      const res = await fetch(`${baseUrl}/api/internal/website-enquiry`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-cc-bridge-key": CC_BRIDGE_KEY,
+        },
+        body: JSON.stringify({
+          event: "WEBSITE_ENQUIRY",
+          brand: "CLASSIC_EDGE_53",
+          sourcePort: 3002,
+          source: params.productName
+            ? `Classic Edge 53 (${params.productName})`
+            : "Classic Edge 53 Website",
+          ...params,
+        }),
+        signal: AbortSignal.timeout(7500),
+      });
+      if (!res.ok) continue;
+      const data = await res.json().catch(() => ({}));
+      return {
+        ok: Boolean(data?.ok),
+        conversationId: data?.conversationId,
+        smartReplyText:
+          typeof data?.smartReplyText === "string" ? data.smartReplyText : undefined,
+        smartCategory: data?.smartCategory,
+        assignedStaffName: data?.assignedStaffName ?? null,
+        assignedTeamName: data?.assignedTeamName ?? null,
+        whatsappDispatched: Boolean(data?.whatsappDispatched),
+        emailDispatchedByHub: Boolean(data?.emailDispatchedByHub),
+      };
+    } catch {
+      // Try next Hub port
+    }
   }
+  return { ok: false };
 }

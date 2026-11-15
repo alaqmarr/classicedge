@@ -7,6 +7,7 @@ import {
   sendAdminReplyEmail,
 } from "@/lib/email";
 import { pushClassicEdgeEnquiryToWhatsAppHub } from "@/lib/whatsapp-bridge";
+import { logClassicEdgeAiTrace } from "@/lib/ai-logger";
 import { revalidatePath } from "next/cache";
 
 export async function submitEnquiry(data: {
@@ -35,6 +36,7 @@ export async function submitEnquiry(data: {
         console.error("Admin email error:", e)
       );
 
+      const evalStartedAt = Date.now();
       const hubResult = await pushClassicEdgeEnquiryToWhatsAppHub({
         enquiryId: enquiry.id,
         name: data.name,
@@ -42,6 +44,39 @@ export async function submitEnquiry(data: {
         phone: data.phone,
         message: data.message,
         productName: data.productName,
+      });
+
+      logClassicEdgeAiTrace({
+        feature: "Classic Edge 53 Enquiry AI Evaluation",
+        actor: `${data.name} (${data.email})`,
+        question: `${data.productName ? `[Machine: ${data.productName}] ` : ""}${data.message}`,
+        model: hubResult.ok ? "claude-haiku-5-5" : "fallback-email",
+        effort: "medium",
+        outcomeSource: hubResult.ok ? "LIVE_AI" : "LOCAL_FALLBACK",
+        responseCacheStatus: "BYPASS",
+        catalogCacheStatus: hubResult.ok ? "HIT" : "BYPASS",
+        cacheDetails: hubResult.ok
+          ? `Evaluated via Central ACRIO Hub (category=${hubResult.smartCategory || "MACHINES"})`
+          : "Hub unreachable -> sent standard thank-you email",
+        productLookupTriggered: Boolean(data.productName),
+        productLookupQuery: data.productName || data.message.slice(0, 80),
+        productLookupTotalScanned: 1,
+        productsLookedUp: data.productName
+          ? [{ name: data.productName, brand: "CLASSIC_EDGE_53", itemType: "MACHINE" }]
+          : [],
+        steps: [
+          {
+            stepNumber: 1,
+            label: "Saved enquiry to Classic Edge 53 DB & forwarded to ACRIO Hub",
+            detail: `hubOk=${hubResult.ok}, whatsappSent=${Boolean(hubResult.whatsappDispatched)}, emailSent=${Boolean(hubResult.emailDispatchedByHub)}`,
+            durationMs: Date.now() - evalStartedAt,
+            status: hubResult.ok ? "OK" : "WARN",
+          },
+        ],
+        response:
+          hubResult.smartReplyText ||
+          "Standard Classic Edge 53 enquiry acknowledgement sent.",
+        durationMs: Date.now() - evalStartedAt,
       });
 
       if (hubResult.ok && hubResult.emailDispatchedByHub) {
