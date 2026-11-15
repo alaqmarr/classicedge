@@ -20,12 +20,22 @@ export async function OPTIONS() {
   return new NextResponse(null, { status: 204, headers: CORS_HEADERS });
 }
 
+function resolvePublicClassicEdgeOrigin(candidate?: string | null): string {
+  const clean = String(candidate || "").trim().replace(/\/+$/, "");
+  if (
+    !clean ||
+    /localhost|127\.0\.0\.1|0\.0\.0\.0/i.test(clean)
+  ) {
+    return "https://classicedge53.com";
+  }
+  return clean;
+}
+
 export async function GET(req: NextRequest) {
   try {
-    const origin =
-      process.env.NEXT_PUBLIC_SITE_URL ||
-      req.nextUrl.origin ||
-      "https://classicedge53.com";
+    const origin = resolvePublicClassicEdgeOrigin(
+      process.env.NEXT_PUBLIC_SITE_URL || req.nextUrl.origin
+    );
 
     const customerQuery = (req.nextUrl.searchParams.get("customer") || "").trim();
 
