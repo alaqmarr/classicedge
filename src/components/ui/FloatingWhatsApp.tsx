@@ -4,9 +4,9 @@ import { FaWhatsapp } from "react-icons/fa";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-export function FloatingWhatsApp({ phoneNumber }: { phoneNumber: string | null }) {
+export function FloatingWhatsApp({ phoneNumber: _phoneNumber }: { phoneNumber: string | null }) {
   const [mounted, setMounted] = useState(false);
-  const number = phoneNumber || "+919849050752"; // Fallback to provided number
+  const cleanDigits = "917337220568";
 
   useEffect(() => {
     setMounted(true);
@@ -16,7 +16,7 @@ export function FloatingWhatsApp({ phoneNumber }: { phoneNumber: string | null }
 
   return (
     <Link 
-      href={`https://wa.me/${number.replace(/[^0-9]/g, '')}`}
+      href={`https://wa.me/${cleanDigits}`}
       target="_blank"
       rel="noopener noreferrer"
       className="fixed bottom-6 right-6 z-50 flex items-center justify-center w-14 h-14 bg-[#25D366] hover:bg-[#1ebd5a] text-white rounded-full shadow-[0_4px_20px_rgba(37,211,102,0.4)] transition-transform hover:scale-110 group"

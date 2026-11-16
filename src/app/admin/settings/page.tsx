@@ -116,7 +116,7 @@ export default function SettingsPage() {
             <input
               {...register("whatsappNumber")}
               className="w-full bg-[#050b14] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-blue-500 transition-colors"
-              placeholder="+919849050752"
+              placeholder="+917337220568"
             />
             <p className="text-xs text-slate-500 mt-1">Include country code. Used for floating CTA button.</p>
           </div>

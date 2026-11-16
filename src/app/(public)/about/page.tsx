@@ -211,7 +211,7 @@ export default async function AboutPage() {
                   )}
                   {member.whatsapp && (
                     <a
-                      href={`https://wa.me/${member.whatsapp.replace(/[^0-9]/g, "")}`}
+                      href={`https://wa.me/917337220568?text=${encodeURIComponent(`Hello ${member.name}, I have an inquiry regarding Classic Edge 53 machines.`)}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-2.5 text-slate-300 hover:text-emerald-400 transition-colors"

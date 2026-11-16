@@ -88,6 +88,10 @@ export interface ClassicConceptsBrandInfo {
   team: TeamMember[];
 }
 
+export const OFFICIAL_WHATSAPP_API_NUMBER = "+91 73372 20568";
+export const OFFICIAL_WHATSAPP_API_DIGITS = "917337220568";
+export const OFFICIAL_WHATSAPP_API_URL = `https://wa.me/${OFFICIAL_WHATSAPP_API_DIGITS}`;
+
 export async function getClassicConceptsBrandInfo(): Promise<ClassicConceptsBrandInfo | null> {
   try {
     const res = await fetch("https://classicconcepts.in/api/brand-info", {
@@ -98,7 +102,18 @@ export async function getClassicConceptsBrandInfo(): Promise<ClassicConceptsBran
       console.error("Failed to fetch Classic Concepts brand info:", res.status);
       return null;
     }
-    return await res.json();
+    const data = (await res.json()) as ClassicConceptsBrandInfo;
+    if (data?.contact) {
+      data.contact.whatsappNumber = OFFICIAL_WHATSAPP_API_NUMBER;
+      data.contact.whatsappUrl = OFFICIAL_WHATSAPP_API_URL;
+    }
+    if (Array.isArray(data?.team)) {
+      data.team = data.team.map((member) => ({
+        ...member,
+        whatsapp: OFFICIAL_WHATSAPP_API_NUMBER,
+      }));
+    }
+    return data;
   } catch (error) {
     console.error("Error fetching Classic Concepts brand info:", error);
     return null;

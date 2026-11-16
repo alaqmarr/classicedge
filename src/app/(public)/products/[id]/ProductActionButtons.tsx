@@ -10,10 +10,10 @@ interface Props {
   whatsappNumber: string | null;
 }
 
-export function ProductActionButtons({ productName, whatsappNumber }: Props) {
+export function ProductActionButtons({ productName, whatsappNumber: _whatsappNumber }: Props) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const number = whatsappNumber || "+919849050752";
-  const whatsappUrl = `https://wa.me/${number.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(`Hi, I am interested in the product: ${productName}`)}`;
+  const cleanDigits = "917337220568";
+  const whatsappUrl = `https://wa.me/${cleanDigits}?text=${encodeURIComponent(`Hi, I am interested in the product: ${productName}`)}`;
 
   return (
     <>

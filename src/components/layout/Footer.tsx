@@ -28,7 +28,8 @@ export default async function Footer() {
   const phones = contact?.phones?.length ? contact.phones : ["+91 98490 50752"];
   const emails = contact?.emails?.length ? contact.emails : ["info@classicedge53.com"];
   const address = contact?.address;
-  const whatsappNumber = contact?.whatsappNumber;
+  const whatsappNumber = "+91 73372 20568";
+  const whatsappUrl = "https://wa.me/917337220568";
 
   return (
     <footer className="bg-[#020610] pt-12 md:pt-16 pb-8 border-t border-white/10 mt-12 md:mt-20">
@@ -95,7 +96,7 @@ export default async function Footer() {
                 <li className="flex items-start gap-3">
                   <FaWhatsapp className="w-4 h-4 text-emerald-500 shrink-0 mt-1" />
                   <a
-                    href={contact?.whatsappUrl || `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, "")}`}
+                    href={whatsappUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="hover:text-emerald-400 transition-colors"

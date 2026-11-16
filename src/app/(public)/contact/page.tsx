@@ -82,12 +82,12 @@ export default async function ContactPage() {
                     <div>
                       <span className="block text-sm font-medium text-slate-500 mb-1">WhatsApp</span>
                       <a
-                        href={contact.whatsappUrl || `https://wa.me/${contact.whatsappNumber.replace(/[^0-9]/g, "")}`}
+                        href="https://wa.me/917337220568"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-slate-200 hover:text-emerald-400 transition-colors inline-flex items-center gap-1.5"
                       >
-                        {contact.whatsappNumber}
+                        +91 73372 20568
                         <ExternalLink className="w-3.5 h-3.5 opacity-70" />
                       </a>
                     </div>
@@ -263,7 +263,7 @@ export default async function ContactPage() {
                   )}
                   {member.whatsapp && (
                     <a
-                      href={`https://wa.me/${member.whatsapp.replace(/[^0-9]/g, "")}`}
+                      href={`https://wa.me/917337220568?text=${encodeURIComponent(`Hello ${member.name}, I have an inquiry regarding Classic Edge 53 machines.`)}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-2.5 text-slate-300 hover:text-emerald-400 transition-colors"
