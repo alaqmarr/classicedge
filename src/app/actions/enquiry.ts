@@ -6,7 +6,10 @@ import {
   sendAdminEnquiryEmail,
   sendAdminReplyEmail,
 } from "@/lib/email";
-import { pushClassicEdgeEnquiryToWhatsAppHub } from "@/lib/whatsapp-bridge";
+import {
+  pushClassicEdgeEnquiryToWhatsAppHub,
+  pushClassicEdgeEnquiryReplyToWhatsAppHub,
+} from "@/lib/whatsapp-bridge";
 import { logClassicEdgeAiTrace } from "@/lib/ai-logger";
 import { revalidatePath } from "next/cache";
 
@@ -117,7 +120,30 @@ export async function replyToEnquiry(enquiryId: string, replyMessage: string) {
       return { success: false, error: "Enquiry not found" };
     }
 
-    await sendAdminReplyEmail(enquiry.email, enquiry.name, replyMessage);
+    let emailSentLocally = false;
+    try {
+      await sendAdminReplyEmail(enquiry.email, enquiry.name, replyMessage);
+      emailSentLocally = true;
+    } catch (err) {
+      console.warn("[CE53 Enquiry Reply] Local SMTP failed, trying Hub relay:", err);
+    }
+
+    const hubSync = await pushClassicEdgeEnquiryReplyToWhatsAppHub({
+      enquiryId: enquiry.id,
+      name: enquiry.name,
+      email: enquiry.email,
+      phone: enquiry.phone,
+      productName: enquiry.productName,
+      originalMessage: enquiry.message,
+      replyMessage,
+      channel: "EMAIL",
+      repliedByName: "Classic Edge 53 Admin",
+      dispatchEmailViaHub: !emailSentLocally,
+    });
+
+    if (!emailSentLocally && !hubSync.emailDispatchedByHub) {
+      return { success: false, error: "Failed to send reply email. Please verify SMTP settings." };
+    }
 
     await prisma.enquiry.update({
       where: { id: enquiryId },

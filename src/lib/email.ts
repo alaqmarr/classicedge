@@ -3,15 +3,26 @@ import prisma from "@/lib/prisma";
 
 async function getTransporter() {
   const settings = await prisma.siteSettings.findFirst();
-  if (!settings?.smtpEmail || !settings?.smtpPassword) {
+  const smtpEmail = (
+    settings?.smtpEmail?.trim() ||
+    process.env.SMTP_USER?.trim() ||
+    "app@rapidshiftlabs.in"
+  );
+  const rawPass = (
+    settings?.smtpPassword?.trim() ||
+    process.env.SMTP_PASS?.trim() ||
+    ""
+  );
+  const smtpPass = rawPass.replace(/\s+/g, "");
+  if (!smtpEmail || !smtpPass || smtpPass === "alaqmar") {
     throw new Error("SMTP settings not configured");
   }
 
   return nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: settings.smtpEmail,
-      pass: settings.smtpPassword,
+      user: smtpEmail,
+      pass: smtpPass,
     },
   });
 }
@@ -108,11 +119,15 @@ export async function sendAdminEnquiryEmail(data: { name: string, email: string,
 export async function sendAdminReplyEmail(to: string, name: string, replyMessage: string) {
   const settings = await prisma.siteSettings.findFirst();
   const transporter = await getTransporter();
+  const fromEmail =
+    settings?.smtpEmail?.trim() ||
+    process.env.SMTP_USER?.trim() ||
+    "app@rapidshiftlabs.in";
 
   await transporter.sendMail({
-    from: `"Classic Edge 53" <${settings!.smtpEmail}>`,
+    from: `"Classic Edge 53" <${fromEmail}>`,
     to,
-    replyTo: settings!.adminEmail || settings!.smtpEmail || undefined,
+    replyTo: settings?.adminEmail || fromEmail || undefined,
     subject: "Regarding your enquiry to Classic Edge 53",
     html: getAdminReplyHtml(name, replyMessage),
   });
