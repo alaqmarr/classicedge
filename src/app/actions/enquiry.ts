@@ -71,7 +71,7 @@ export async function submitEnquiry(data: {
           {
             stepNumber: 1,
             label: "Saved enquiry to Classic Edge 53 DB & forwarded to ACRIO Hub",
-            detail: `hubOk=${hubResult.ok}, whatsappSent=${Boolean(hubResult.whatsappDispatched)}, emailSent=${Boolean(hubResult.emailDispatchedByHub)}`,
+            detail: `hubOk=${hubResult.ok}, whatsappSent=${Boolean(hubResult.whatsappDispatched)}, emailSent=${Boolean(hubResult.emailDispatchedByHub)}${hubResult.errorDetail ? `, reason="${hubResult.errorDetail}"` : ""}`,
             durationMs: Date.now() - evalStartedAt,
             status: hubResult.ok ? "OK" : "WARN",
           },
@@ -80,6 +80,7 @@ export async function submitEnquiry(data: {
           hubResult.smartReplyText ||
           "Standard Classic Edge 53 enquiry acknowledgement sent.",
         durationMs: Date.now() - evalStartedAt,
+        error: hubResult.ok ? undefined : hubResult.errorDetail,
       });
 
       if (hubResult.ok && hubResult.emailDispatchedByHub) {

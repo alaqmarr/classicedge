@@ -21,6 +21,9 @@ export function getWhatsAppHubInternalUrls(): string[] {
         process.env.CCWHATSAPP_INTERNAL_URL,
         "http://127.0.0.1:3007",
         "http://127.0.0.1:3000",
+        process.env.NEXT_PUBLIC_CCWHATSAPP_URL,
+        "https://chat.ccapl.cc",
+        "https://whatsapp.ccapl.cc",
       ]
         .filter(Boolean)
         .map((u) => String(u).replace(/\/+$/, ""))
@@ -60,6 +63,7 @@ export interface SmartEnquiryEvaluationResult {
   assignedTeamName?: string | null;
   whatsappDispatched?: boolean;
   emailDispatchedByHub?: boolean;
+  errorDetail?: string;
 }
 
 export async function pushClassicEdgeEnquiryToWhatsAppHub(params: {
@@ -70,6 +74,7 @@ export async function pushClassicEdgeEnquiryToWhatsAppHub(params: {
   message: string;
   productName?: string;
 }): Promise<SmartEnquiryEvaluationResult> {
+  const errors: string[] = [];
   for (const baseUrl of getWhatsAppHubInternalUrls()) {
     try {
       const res = await fetch(`${baseUrl}/api/internal/website-enquiry`, {
@@ -91,9 +96,12 @@ export async function pushClassicEdgeEnquiryToWhatsAppHub(params: {
             : "Classic Edge 53 Website",
           ...params,
         }),
-        signal: AbortSignal.timeout(7500),
+        signal: AbortSignal.timeout(25000),
       });
-      if (!res.ok) continue;
+      if (!res.ok) {
+        errors.push(`${baseUrl} -> HTTP ${res.status}`);
+        continue;
+      }
       const data = await res.json().catch(() => ({}));
       return {
         ok: Boolean(data?.ok),
@@ -105,12 +113,13 @@ export async function pushClassicEdgeEnquiryToWhatsAppHub(params: {
         assignedTeamName: data?.assignedTeamName ?? null,
         whatsappDispatched: Boolean(data?.whatsappDispatched),
         emailDispatchedByHub: Boolean(data?.emailDispatchedByHub),
+        errorDetail: data?.ok ? undefined : String(data?.error || "Hub returned ok=false"),
       };
-    } catch {
-      // Try next Hub port
+    } catch (err: any) {
+      errors.push(`${baseUrl} -> ${err?.message || "fetch failed"}`);
     }
   }
-  return { ok: false };
+  return { ok: false, errorDetail: errors.join("; ") || "No Hub endpoints reachable" };
 }
 
 export async function pushClassicEdgeEnquiryReplyToWhatsAppHub(params: {
