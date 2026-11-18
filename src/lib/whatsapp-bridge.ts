@@ -115,8 +115,8 @@ export async function pushClassicEdgeEnquiryToWhatsAppHub(params: {
         emailDispatchedByHub: Boolean(data?.emailDispatchedByHub),
         errorDetail: data?.ok ? undefined : String(data?.error || "Hub returned ok=false"),
       };
-    } catch (err: any) {
-      errors.push(`${baseUrl} -> ${err?.message || "fetch failed"}`);
+    } catch (err: unknown) {
+      errors.push(`${baseUrl} -> ${err instanceof Error ? err.message : "fetch failed"}`);
     }
   }
   return { ok: false, errorDetail: errors.join("; ") || "No Hub endpoints reachable" };
